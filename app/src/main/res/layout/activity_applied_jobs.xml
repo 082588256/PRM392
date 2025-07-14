@@ -5,19 +5,53 @@
     android:layout_height="match_parent"
     android:paddingTop="60dp"
     android:paddingLeft="16dp"
+    android:paddingRight="16dp"
     android:background="#FFFFFF">
 
-    <TextView
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Danh sách đã ứng tuyển"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="@color/black"
-        android:layout_marginBottom="12dp"/>
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:layout_gravity="center_horizontal">
+
+        <TextView
+            android:id="@+id/tv_applied"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="Danh sách đã ứng tuyển"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:gravity="center"
+            android:background="@drawable/tab_selected_bg"
+            android:padding="8dp"
+            android:elevation="2dp" />
+
+        <TextView
+            android:id="@+id/tv_saved"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="Việc đã lưu"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/gray"
+            android:gravity="center"
+            android:background="@drawable/tab_unselected_bg"
+            android:padding="8dp"
+            android:elevation="2dp" />
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_applied_jobs"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingBottom="12dp"
+        android:overScrollMode="never" />
+
 </LinearLayout>
