@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import com.fptu.prm391.projectprm.model.Application;
+import com.fptu.prm391.projectprm.model.Internship;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,6 +64,66 @@ public class ApplicationDAO {
 
             applications.add(application);
         }
+        cursor.close();
+        return applications;
+    }
+
+    public List<Application> getApplicationsWithInternship(int studentId) {
+        List<Application> applications = new ArrayList<>();
+
+        String query = "SELECT a.*, " +
+                "i." + InternshipDAO.COLUMN_TITLE + ", " +
+                "i." + InternshipDAO.COLUMN_COMPANY + ", " +
+                "i." + InternshipDAO.COLUMN_LOCATION + ", " +
+                "i." + InternshipDAO.COLUMN_DURATION + ", " +
+                "i." + InternshipDAO.COLUMN_FIELD + ", " +
+                "i." + InternshipDAO.COLUMN_DESCRIPTION + ", " +
+                "i." + InternshipDAO.COLUMN_REQUIREMENTS + ", " +
+                "i." + InternshipDAO.COLUMN_STIPEND + ", " +
+                "i." + InternshipDAO.COLUMN_DEADLINE + ", " +
+                "i." + InternshipDAO.COLUMN_RECRUITER_ID + ", " +
+                "i." + InternshipDAO.COLUMN_LATITUDE + ", " +
+                "i." + InternshipDAO.COLUMN_LONGITUDE + ", " +
+                "i." + InternshipDAO.COLUMN_CREATED_AT +
+                " FROM " + TABLE_NAME + " a " +
+                " INNER JOIN " + InternshipDAO.TABLE_NAME + " i " +
+                " ON a." + COLUMN_INTERNSHIP_ID + " = i." + InternshipDAO.COLUMN_ID +
+                " WHERE a." + COLUMN_STUDENT_ID + " = ?" +
+                " ORDER BY a." + COLUMN_APPLIED_AT + " DESC";
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(studentId)});
+
+        while (cursor.moveToNext()) {
+            Application application = new Application();
+            application.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+            application.setStudentId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STUDENT_ID)));
+            application.setInternshipId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_INTERNSHIP_ID)));
+            application.setResume(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RESUME)));
+            application.setStatus(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STATUS)));
+            application.setAppliedAt(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APPLIED_AT)));
+
+            // Gán đối tượng Internship từ JOIN
+            Internship internship = new Internship();
+            internship.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_INTERNSHIP_ID)));
+            internship.setTitle(cursor.getString(cursor.getColumnIndexOrThrow(InternshipDAO.COLUMN_TITLE)));
+            internship.setCompany(cursor.getString(cursor.getColumnIndexOrThrow(InternshipDAO.COLUMN_COMPANY)));
+            internship.setLocation(cursor.getString(cursor.getColumnIndexOrThrow(InternshipDAO.COLUMN_LOCATION)));
+            internship.setDuration(cursor.getString(cursor.getColumnIndexOrThrow(InternshipDAO.COLUMN_DURATION)));
+            internship.setField(cursor.getString(cursor.getColumnIndexOrThrow(InternshipDAO.COLUMN_FIELD)));
+            internship.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(InternshipDAO.COLUMN_DESCRIPTION)));
+            internship.setRequirements(cursor.getString(cursor.getColumnIndexOrThrow(InternshipDAO.COLUMN_REQUIREMENTS)));
+            internship.setStipend(cursor.getString(cursor.getColumnIndexOrThrow(InternshipDAO.COLUMN_STIPEND)));
+            internship.setDeadline(cursor.getString(cursor.getColumnIndexOrThrow(InternshipDAO.COLUMN_DEADLINE)));
+            internship.setRecruiterId(cursor.getInt(cursor.getColumnIndexOrThrow(InternshipDAO.COLUMN_RECRUITER_ID)));
+            internship.setLatitude(cursor.getDouble(cursor.getColumnIndexOrThrow(InternshipDAO.COLUMN_LATITUDE)));
+            internship.setLongitude(cursor.getDouble(cursor.getColumnIndexOrThrow(InternshipDAO.COLUMN_LONGITUDE)));
+            internship.setCreatedAt(cursor.getString(cursor.getColumnIndexOrThrow(InternshipDAO.COLUMN_CREATED_AT)));
+
+            application.setInternship(internship);
+
+            applications.add(application);
+        }
+
         cursor.close();
         return applications;
     }

@@ -20,6 +20,7 @@ import com.fptu.prm391.projectprm.db.DatabaseHelper;
 import com.fptu.prm391.projectprm.db.InternshipDAO;
 import com.fptu.prm391.projectprm.model.Internship;
 import com.fptu.prm391.projectprm.util.SharedPrefManager;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 
 import java.text.ParseException;
@@ -64,6 +65,11 @@ public class InternshipListActivity extends AppCompatActivity implements Interns
             Intent intent = new Intent(this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
+        });
+
+        FloatingActionButton btnViewApplications = findViewById(R.id.btnViewApplications);
+        btnViewApplications.setOnClickListener(v -> {
+            startActivity(new Intent(this, AppliedJobsActivity.class));
         });
     }
 
