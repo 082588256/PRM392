@@ -1,0 +1,58 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingTop="50dp">
+
+    <!-- Thanh top gồm nút logout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Posted Internship"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#333333" />
+
+        <ImageButton
+            android:id="@+id/btnLogout"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_logout"
+            android:contentDescription="Đăng xuất"
+            android:background="@android:color/transparent"
+            android:scaleType="centerInside"
+            android:padding="0dp" />
+    </LinearLayout>
+
+    <!-- Text thông báo rỗng -->
+    <TextView
+        android:id="@+id/tvEmptyMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bạn chưa đăng vị trí thực tập nào."
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:visibility="gone"
+        android:paddingTop="32dp"
+        android:paddingBottom="16dp" />
+
+    <!-- Danh sách thực tập -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_posted_internships"
+        android:layout_width="match_parent"
+        android:paddingLeft="-10dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="vertical" />
+</LinearLayout>

@@ -123,6 +123,37 @@ public class InternshipDAO {
         return internship;
     }
 
+    public List<Internship> getInternshipsByRecruiterId(int recruiterId) {
+        List<Internship> internships = new ArrayList<>();
+        Cursor cursor = db.query(TABLE_NAME,
+                null,
+                COLUMN_RECRUITER_ID + " = ?",
+                new String[]{String.valueOf(recruiterId)},
+                null, null, COLUMN_CREATED_AT + " DESC");
+
+        while (cursor.moveToNext()) {
+            Internship internship = new Internship();
+            internship.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+            internship.setTitle(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TITLE)));
+            internship.setCompany(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COMPANY)));
+            internship.setLocation(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LOCATION)));
+            internship.setDuration(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DURATION)));
+            internship.setField(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIELD)));
+            internship.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+            internship.setRequirements(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REQUIREMENTS)));
+            internship.setStipend(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STIPEND)));
+            internship.setDeadline(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DEADLINE)));
+            internship.setRecruiterId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_RECRUITER_ID)));
+            internship.setLatitude(cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LATITUDE)));
+            internship.setLongitude(cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LONGITUDE)));
+            internship.setCreatedAt(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CREATED_AT)));
+
+            internships.add(internship);
+        }
+        cursor.close();
+        return internships;
+    }
+
     public int updateInternship(Internship internship) {
         ContentValues values = new ContentValues();
         values.put(COLUMN_TITLE, internship.getTitle());

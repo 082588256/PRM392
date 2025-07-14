@@ -48,6 +48,10 @@
             android:name=".activity.student.AppliedJobsActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".activity.recruiter.PostedInternshipsActivity"
+            android:exported="false" />
+
 <!--        <activity-->
 <!--            android:name=".activity.student.ApplicationHistoryActivity"-->
 <!--            android:exported="false" />-->

@@ -106,8 +106,13 @@ public class LoginActivity extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             finish();
+        } else if ("recruiter".equalsIgnoreCase(user.getRole())) {
+            Intent intent = new Intent(this, com.fptu.prm391.projectprm.activity.recruiter.PostedInternshipsActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
         } else {
-            Toast.makeText(this, "Chỉ hỗ trợ sinh viên ở phiên bản này", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Không xác định được vai trò người dùng", Toast.LENGTH_SHORT).show();
         }
     }
 
