@@ -41,8 +41,43 @@
             android:exported="false" />
 
         <activity
+            android:name=".activity.student.ApplyActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".activity.student.AppliedJobsActivity"
             android:exported="false" />
+
+<!--        <activity-->
+<!--            android:name=".activity.student.ApplicationHistoryActivity"-->
+<!--            android:exported="false" />-->
+
+<!--        <activity-->
+<!--            android:name=".activity.student.InterviewSchedulingActivity"-->
+<!--            android:exported="false" />-->
+
+<!--        &lt;!&ndash; Recruiter Activities &ndash;&gt;-->
+<!--        <activity-->
+<!--            android:name=".activity.recruiter.PostInternshipActivity"-->
+<!--            android:exported="false" />-->
+
+<!--        <activity-->
+<!--            android:name=".activity.recruiter.ViewApplicationsActivity"-->
+<!--            android:exported="false" />-->
+
+<!--        &lt;!&ndash; Common Activities &ndash;&gt;-->
+<!--        <activity-->
+<!--            android:name=".activity.common.ChatActivity"-->
+<!--            android:exported="false"-->
+<!--            android:windowSoftInputMode="adjustResize" />-->
+
+<!--        <activity-->
+<!--            android:name=".activity.common.MapActivity"-->
+<!--            android:exported="false" />-->
+
+<!--        <activity-->
+<!--            android:name=".activity.common.ProfileActivity"-->
+<!--            android:exported="false" />-->
 
     </application>
 

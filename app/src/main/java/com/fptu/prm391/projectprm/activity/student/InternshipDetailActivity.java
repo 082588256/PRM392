@@ -1,29 +1,24 @@
 package com.fptu.prm391.projectprm.activity.student;
 
+import android.content.Intent; // THÊM IMPORT NÀY!
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.google.android.material.button.MaterialButton; // THÊM IMPORT NÀY!
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.fptu.prm391.projectprm.R;
-import com.fptu.prm391.projectprm.db.ApplicationDAO;
 import com.fptu.prm391.projectprm.db.DatabaseHelper;
 import com.fptu.prm391.projectprm.db.InternshipDAO;
-import com.fptu.prm391.projectprm.model.Application;
 import com.fptu.prm391.projectprm.model.Internship;
-import com.fptu.prm391.projectprm.util.SharedPrefManager;
-
-import java.util.List;
 
 public class InternshipDetailActivity extends AppCompatActivity {
 
     private TextView tvTitle, tvCompany, tvLocation, tvDuration,
             tvStipend, tvDeadline, tvDescription, tvRequirements;
-    private Button btnApply;
-    private Internship internship;
-    private int studentId;
+
+    private MaterialButton btnApply; // THÊM DÒNG NÀY
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +36,7 @@ public class InternshipDetailActivity extends AppCompatActivity {
             return;
         }
 
-        // Init views
+        // Ánh xạ view
         tvTitle = findViewById(R.id.tvTitle);
         tvCompany = findViewById(R.id.tvCompany);
         tvLocation = findViewById(R.id.tvLocation);
@@ -50,39 +45,27 @@ public class InternshipDetailActivity extends AppCompatActivity {
         tvDeadline = findViewById(R.id.tvDeadline);
         tvDescription = findViewById(R.id.tvDescription);
         tvRequirements = findViewById(R.id.tvRequirements);
-        btnApply = findViewById(R.id.btnApply);
 
-        // Get student info from session
-        studentId = SharedPrefManager.getInstance(this).getUser().getId();
+        btnApply = findViewById(R.id.btnApply); // THÊM DÒNG NÀY
 
-        // Get internship details
-        InternshipDAO internshipDAO = new InternshipDAO(new DatabaseHelper(this).getReadableDatabase());
-        internship = internshipDAO.getInternshipById(internshipId);
+        // Lấy dữ liệu từ DAO
+        InternshipDAO dao = new InternshipDAO(new DatabaseHelper(this).getReadableDatabase());
+        Internship internship = dao.getInternshipById(internshipId);
 
         if (internship != null) {
             bindInternshipData(internship);
-            checkIfAlreadyApplied();
+
+            // XỬ LÝ SỰ KIỆN BẤM NÚT APPLY
+            btnApply.setOnClickListener(v -> {
+                Intent intent = new Intent(InternshipDetailActivity.this, ApplyActivity.class);
+                intent.putExtra("INTERNSHIP_ID", internshipId); // Truyền id sang ApplyActivity
+                startActivity(intent);
+            });
+
         } else {
-            Toast.makeText(this, "Không tìm thấy thông tin thực tập.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Internship not found", Toast.LENGTH_SHORT).show();
             finish();
         }
-
-        // Handle Apply button
-        btnApply.setOnClickListener(v -> {
-            ApplicationDAO appDAO = new ApplicationDAO(new DatabaseHelper(this).getWritableDatabase());
-
-            Application application = new Application(studentId, internship.getId(), "My resume here");
-
-            long result = appDAO.insertApplication(application);
-
-            if (result != -1) {
-                Toast.makeText(this, "Ứng tuyển thành công!", Toast.LENGTH_SHORT).show();
-                btnApply.setEnabled(false);
-                btnApply.setText("Đã ứng tuyển");
-            } else {
-                Toast.makeText(this, "Ứng tuyển thất bại!", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     private void bindInternshipData(Internship internship) {
@@ -94,18 +77,5 @@ public class InternshipDetailActivity extends AppCompatActivity {
         tvDeadline.setText(internship.getDeadline());
         tvDescription.setText(internship.getDescription());
         tvRequirements.setText(internship.getRequirements());
-    }
-
-    private void checkIfAlreadyApplied() {
-        ApplicationDAO appDAO = new ApplicationDAO(new DatabaseHelper(this).getReadableDatabase());
-        List<Application> existingApplications = appDAO.getApplicationsByStudentId(studentId);
-
-        for (Application app : existingApplications) {
-            if (app.getInternshipId() == internship.getId()) {
-                btnApply.setEnabled(false);
-                btnApply.setText("Đã ứng tuyển");
-                break;
-            }
-        }
     }
 }

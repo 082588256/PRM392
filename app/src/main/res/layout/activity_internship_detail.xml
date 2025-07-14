@@ -224,14 +224,4 @@
             app:backgroundTint="@color/colorPrimary"
             app:cornerRadius="8dp" />
     </LinearLayout>
-
-<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-<!--        android:id="@+id/btnViewApplications"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_gravity="end|bottom"-->
-<!--        android:layout_margin="16dp"-->
-<!--        android:contentDescription="Lịch sử ứng tuyển"-->
-<!--        app:srcCompat="@drawable/ic_history"-->
-<!--    app:backgroundTint="@color/colorPrimary" />-->
 </ScrollView>

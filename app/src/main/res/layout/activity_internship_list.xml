@@ -84,6 +84,6 @@
         android:layout_margin="16dp"
         android:contentDescription="Lịch sử ứng tuyển"
         app:srcCompat="@drawable/ic_history"
-    app:backgroundTint="@color/colorPrimary" />
+        app:backgroundTint="@color/colorPrimary" />
 
 </LinearLayout>
