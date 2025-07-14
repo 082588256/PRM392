@@ -39,6 +39,9 @@
         <activity
             android:name=".activity.student.InternshipDetailActivity"
             android:exported="false" />
+        <activity
+            android:name=".activity.student.ApplyActivity"
+            android:exported="false" />
 
 <!--        <activity-->
 <!--            android:name=".activity.student.ApplicationHistoryActivity"-->

@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "internship_recruitment.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     private static DatabaseHelper instance;
 
@@ -30,6 +30,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(InterviewDAO.CREATE_TABLE);
         db.execSQL(NotificationDAO.CREATE_TABLE);
         db.execSQL(MessageDAO.CREATE_TABLE);
+        //Phần hiếu
+        db.execSQL(InterviewScheduleDAO.CREATE_TABLE);
+
 
     }
 

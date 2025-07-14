@@ -3,7 +3,9 @@ package com.fptu.prm391.projectprm.db;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
 import com.fptu.prm391.projectprm.model.Application;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,19 +14,23 @@ public class ApplicationDAO {
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_STUDENT_ID = "student_id";
     public static final String COLUMN_INTERNSHIP_ID = "internship_id";
-    public static final String COLUMN_RESUME = "resume";
-    public static final String COLUMN_STATUS = "status";
-    public static final String COLUMN_APPLIED_AT = "applied_at";
+    public static final String COLUMN_RESUME_FILE = "resume_file";      // Đường dẫn/uri file CV
+    public static final String COLUMN_COVER_LETTER = "cover_letter";   // Thư giới thiệu
+    public static final String COLUMN_NOTE = "note";                   // Lưu ý
+    public static final String COLUMN_STATUS = "status";               // Pending, Under Review, Accepted, Rejected
+    public static final String COLUMN_APPLIED_AT = "applied_at";       // Thời điểm ứng tuyển
 
-    public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + "("
-            + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-            + COLUMN_STUDENT_ID + " INTEGER NOT NULL,"
-            + COLUMN_INTERNSHIP_ID + " INTEGER NOT NULL,"
-            + COLUMN_RESUME + " TEXT NOT NULL,"
-            + COLUMN_STATUS + " TEXT DEFAULT 'Pending',"
-            + COLUMN_APPLIED_AT + " DATETIME DEFAULT CURRENT_TIMESTAMP,"
-            + "FOREIGN KEY(" + COLUMN_STUDENT_ID + ") REFERENCES " + UserDAO.TABLE_NAME + "(" + UserDAO.COLUMN_ID + "),"
-            + "FOREIGN KEY(" + COLUMN_INTERNSHIP_ID + ") REFERENCES " + InternshipDAO.TABLE_NAME + "(" + InternshipDAO.COLUMN_ID + ")"
+    public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " ("
+            + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + COLUMN_STUDENT_ID + " INTEGER NOT NULL, "
+            + COLUMN_INTERNSHIP_ID + " INTEGER NOT NULL, "
+            + COLUMN_RESUME_FILE + " TEXT, "
+            + COLUMN_COVER_LETTER + " TEXT, "
+            + COLUMN_NOTE + " TEXT, "
+            + COLUMN_STATUS + " TEXT DEFAULT 'Pending', "
+            + COLUMN_APPLIED_AT + " DATETIME DEFAULT CURRENT_TIMESTAMP, "
+            + "FOREIGN KEY(" + COLUMN_STUDENT_ID + ") REFERENCES users(id), "
+            + "FOREIGN KEY(" + COLUMN_INTERNSHIP_ID + ") REFERENCES internships(id)"
             + ")";
 
     private SQLiteDatabase db;
@@ -33,16 +39,19 @@ public class ApplicationDAO {
         this.db = db;
     }
 
+    // Thêm ứng tuyển mới
     public long insertApplication(Application application) {
         ContentValues values = new ContentValues();
         values.put(COLUMN_STUDENT_ID, application.getStudentId());
         values.put(COLUMN_INTERNSHIP_ID, application.getInternshipId());
-        values.put(COLUMN_RESUME, application.getResume());
-        values.put(COLUMN_STATUS, application.getStatus());
-
+        values.put(COLUMN_RESUME_FILE, application.getResumeFile());
+        values.put(COLUMN_COVER_LETTER, application.getCoverLetter());
+        values.put(COLUMN_NOTE, application.getNote());
+        values.put(COLUMN_STATUS, "Pending"); // FORCE status luôn là Pending
         return db.insert(TABLE_NAME, null, values);
     }
 
+    // Lấy danh sách ứng tuyển theo studentId
     public List<Application> getApplicationsByStudentId(int studentId) {
         List<Application> applications = new ArrayList<>();
         Cursor cursor = db.query(TABLE_NAME,
@@ -56,7 +65,9 @@ public class ApplicationDAO {
             application.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
             application.setStudentId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STUDENT_ID)));
             application.setInternshipId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_INTERNSHIP_ID)));
-            application.setResume(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RESUME)));
+            application.setResumeFile(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RESUME_FILE)));
+            application.setCoverLetter(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COVER_LETTER)));
+            application.setNote(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NOTE)));
             application.setStatus(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STATUS)));
             application.setAppliedAt(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APPLIED_AT)));
 
@@ -66,6 +77,7 @@ public class ApplicationDAO {
         return applications;
     }
 
+    // Update trạng thái ứng tuyển
     public int updateApplicationStatus(int applicationId, String status) {
         ContentValues values = new ContentValues();
         values.put(COLUMN_STATUS, status);
@@ -75,9 +87,34 @@ public class ApplicationDAO {
                 new String[]{String.valueOf(applicationId)});
     }
 
+    // Xóa ứng tuyển
     public int deleteApplication(int applicationId) {
         return db.delete(TABLE_NAME,
                 COLUMN_ID + " = ?",
                 new String[]{String.valueOf(applicationId)});
+    }
+
+    // (Tuỳ chọn) Lấy Application theo ID
+    public Application getApplicationById(int id) {
+        Application application = null;
+        Cursor cursor = db.query(TABLE_NAME,
+                null,
+                COLUMN_ID + " = ?",
+                new String[]{String.valueOf(id)},
+                null, null, null);
+
+        if (cursor.moveToFirst()) {
+            application = new Application();
+            application.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+            application.setStudentId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_STUDENT_ID)));
+            application.setInternshipId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_INTERNSHIP_ID)));
+            application.setResumeFile(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_RESUME_FILE)));
+            application.setCoverLetter(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COVER_LETTER)));
+            application.setNote(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NOTE)));
+            application.setStatus(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STATUS)));
+            application.setAppliedAt(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_APPLIED_AT)));
+        }
+        cursor.close();
+        return application;
     }
 }

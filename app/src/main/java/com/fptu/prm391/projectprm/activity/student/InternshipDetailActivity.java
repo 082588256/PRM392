@@ -1,8 +1,10 @@
 package com.fptu.prm391.projectprm.activity.student;
 
+import android.content.Intent; // THÊM IMPORT NÀY!
 import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.google.android.material.button.MaterialButton; // THÊM IMPORT NÀY!
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,6 +17,8 @@ public class InternshipDetailActivity extends AppCompatActivity {
 
     private TextView tvTitle, tvCompany, tvLocation, tvDuration,
             tvStipend, tvDeadline, tvDescription, tvRequirements;
+
+    private MaterialButton btnApply; // THÊM DÒNG NÀY
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,12 +46,22 @@ public class InternshipDetailActivity extends AppCompatActivity {
         tvDescription = findViewById(R.id.tvDescription);
         tvRequirements = findViewById(R.id.tvRequirements);
 
+        btnApply = findViewById(R.id.btnApply); // THÊM DÒNG NÀY
+
         // Lấy dữ liệu từ DAO
         InternshipDAO dao = new InternshipDAO(new DatabaseHelper(this).getReadableDatabase());
         Internship internship = dao.getInternshipById(internshipId);
 
         if (internship != null) {
             bindInternshipData(internship);
+
+            // XỬ LÝ SỰ KIỆN BẤM NÚT APPLY
+            btnApply.setOnClickListener(v -> {
+                Intent intent = new Intent(InternshipDetailActivity.this, ApplyActivity.class);
+                intent.putExtra("INTERNSHIP_ID", internshipId); // Truyền id sang ApplyActivity
+                startActivity(intent);
+            });
+
         } else {
             Toast.makeText(this, "Internship not found", Toast.LENGTH_SHORT).show();
             finish();
