@@ -8,6 +8,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "internship_recruitment.db";
     private static final int DATABASE_VERSION = 2;
 
+    // Lệnh tạo bảng saved_jobs
+    public static final String CREATE_TABLE_SAVED_JOBS = "CREATE TABLE IF NOT EXISTS saved_jobs (" +
+            "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "student_id INTEGER NOT NULL, " +
+            "internship_id INTEGER NOT NULL, " +
+            "FOREIGN KEY(student_id) REFERENCES users(id), " +
+            "FOREIGN KEY(internship_id) REFERENCES internships(id)" +
+            ")";
+
     private static DatabaseHelper instance;
 
     public static synchronized DatabaseHelper getInstance(Context context) {
@@ -30,10 +39,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(InterviewDAO.CREATE_TABLE);
         db.execSQL(NotificationDAO.CREATE_TABLE);
         db.execSQL(MessageDAO.CREATE_TABLE);
-        //Phần hiếu
         db.execSQL(InterviewScheduleDAO.CREATE_TABLE);
-
-
+        db.execSQL(CREATE_TABLE_SAVED_JOBS); // <-- thêm dòng này
     }
 
     @Override
@@ -45,6 +52,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + InterviewDAO.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + MessageDAO.TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + NotificationDAO.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + InterviewScheduleDAO.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS saved_jobs"); // <-- thêm dòng này
 
         // Tạo lại database
         onCreate(db);

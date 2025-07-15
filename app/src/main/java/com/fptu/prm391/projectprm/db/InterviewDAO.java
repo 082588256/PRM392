@@ -3,7 +3,10 @@ package com.fptu.prm391.projectprm.db;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
 import com.fptu.prm391.projectprm.model.Interview;
+import com.fptu.prm391.projectprm.model.InterviewInfo;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +33,7 @@ public class InterviewDAO {
         this.db = db;
     }
 
+    // Thêm lịch phỏng vấn mới
     public long insertInterview(Interview interview) {
         ContentValues values = new ContentValues();
         values.put(COLUMN_APPLICATION_ID, interview.getApplicationId());
@@ -40,6 +44,7 @@ public class InterviewDAO {
         return db.insert(TABLE_NAME, null, values);
     }
 
+    // Lấy danh sách phỏng vấn theo applicationId
     public List<Interview> getInterviewsByApplicationId(int applicationId) {
         List<Interview> interviews = new ArrayList<>();
         Cursor cursor = db.query(TABLE_NAME,
@@ -62,6 +67,7 @@ public class InterviewDAO {
         return interviews;
     }
 
+    // Update trạng thái lịch phỏng vấn
     public int updateInterviewStatus(int interviewId, String status) {
         ContentValues values = new ContentValues();
         values.put(COLUMN_STATUS, status);
@@ -71,9 +77,36 @@ public class InterviewDAO {
                 new String[]{String.valueOf(interviewId)});
     }
 
+    // Xóa lịch phỏng vấn
     public int deleteInterview(int interviewId) {
         return db.delete(TABLE_NAME,
                 COLUMN_ID + " = ?",
                 new String[]{String.valueOf(interviewId)});
+    }
+
+    // ---- CODE THÊM MỚI: Lấy danh sách lịch phỏng vấn + email + company (JOIN) ----
+    // Trả về list<InterviewInfo>
+    public List<InterviewInfo> getInterviewInfoByStudentId(int studentId) {
+        List<InterviewInfo> list = new ArrayList<>();
+        String sql = "SELECT i.id, u.email, i.scheduled_time, i.status, i.notes, s.company " +
+                "FROM interviews i " +
+                "JOIN applications a ON i.application_id = a.id " +
+                "JOIN users u ON a.student_id = u.id " +
+                "JOIN internships s ON a.internship_id = s.id " +
+                "WHERE a.student_id = ?";
+        Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(studentId)});
+        while (cursor.moveToNext()) {
+            InterviewInfo info = new InterviewInfo();
+            info.setInterviewId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
+
+            info.setEmail(cursor.getString(cursor.getColumnIndexOrThrow("email")));
+            info.setScheduledTime(cursor.getString(cursor.getColumnIndexOrThrow("scheduled_time")));
+            info.setStatus(cursor.getString(cursor.getColumnIndexOrThrow("status")));
+            info.setNotes(cursor.getString(cursor.getColumnIndexOrThrow("notes")));
+            info.setCompany(cursor.getString(cursor.getColumnIndexOrThrow("company")));
+            list.add(info);
+        }
+        cursor.close();
+        return list;
     }
 }
