@@ -71,15 +71,33 @@
                             android:textColor="@color/gray"
                             android:textSize="12sp" />
 
-                        <TextView
-                            android:id="@+id/tvLocation"
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="Mountain View, CA"
-                            android:textColor="@color/black"
-                            android:textSize="14sp" />
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginTop="4dp">
+
+                            <TextView
+                                android:id="@+id/tvLocation"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:text="Mountain View, CA"
+                                android:textColor="@color/black"
+                                android:textSize="14sp" />
+
+                            <ImageButton
+                                android:id="@+id/btnMap"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_location"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:contentDescription="Open Map" />
+                        </LinearLayout>
                     </LinearLayout>
+
+
 
                     <LinearLayout
                         android:layout_width="0dp"

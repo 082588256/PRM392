@@ -83,6 +83,12 @@
 <!--            android:name=".activity.common.ProfileActivity"-->
 <!--            android:exported="false" />-->
 
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyA7Vg7jARLrEYa1UVWITpLTO-YL5CJ8x9M"/>
+
+        <activity android:name=".activity.common.MapActivity" />
+
     </application>
 
 </manifest>

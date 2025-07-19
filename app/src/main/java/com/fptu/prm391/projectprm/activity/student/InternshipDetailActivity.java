@@ -1,10 +1,12 @@
 package com.fptu.prm391.projectprm.activity.student;
 
-import android.content.Intent; // THÊM IMPORT NÀY!
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.google.android.material.button.MaterialButton; // THÊM IMPORT NÀY!
+
+import com.google.android.material.button.MaterialButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,7 +20,8 @@ public class InternshipDetailActivity extends AppCompatActivity {
     private TextView tvTitle, tvCompany, tvLocation, tvDuration,
             tvStipend, tvDeadline, tvDescription, tvRequirements;
 
-    private MaterialButton btnApply; // THÊM DÒNG NÀY
+    private MaterialButton btnApply;
+    private ImageButton btnMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,8 +48,8 @@ public class InternshipDetailActivity extends AppCompatActivity {
         tvDeadline = findViewById(R.id.tvDeadline);
         tvDescription = findViewById(R.id.tvDescription);
         tvRequirements = findViewById(R.id.tvRequirements);
-
-        btnApply = findViewById(R.id.btnApply); // THÊM DÒNG NÀY
+        btnApply = findViewById(R.id.btnApply);
+        btnMap = findViewById(R.id.btnMap); // Ánh xạ nút bản đồ
 
         // Lấy dữ liệu từ DAO
         InternshipDAO dao = new InternshipDAO(new DatabaseHelper(this).getReadableDatabase());
@@ -55,10 +58,19 @@ public class InternshipDetailActivity extends AppCompatActivity {
         if (internship != null) {
             bindInternshipData(internship);
 
-            // XỬ LÝ SỰ KIỆN BẤM NÚT APPLY
+            // Xử lý nút APPLY
             btnApply.setOnClickListener(v -> {
                 Intent intent = new Intent(InternshipDetailActivity.this, ApplyActivity.class);
-                intent.putExtra("INTERNSHIP_ID", internshipId); // Truyền id sang ApplyActivity
+                intent.putExtra("INTERNSHIP_ID", internshipId);
+                startActivity(intent);
+            });
+
+            // Xử lý nút bản đồ
+            btnMap.setOnClickListener(v -> {
+                Intent intent = new Intent(InternshipDetailActivity.this, com.fptu.prm391.projectprm.activity.common.MapActivity.class);
+                intent.putExtra("LATITUDE", internship.getLatitude());
+                intent.putExtra("LONGITUDE", internship.getLongitude());
+                intent.putExtra("LOCATION_NAME", internship.getLocation());
                 startActivity(intent);
             });
 
