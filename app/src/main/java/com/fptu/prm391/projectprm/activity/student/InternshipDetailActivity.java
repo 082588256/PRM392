@@ -11,9 +11,11 @@ import com.google.android.material.button.MaterialButton;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.fptu.prm391.projectprm.R;
+import com.fptu.prm391.projectprm.db.ApplicationDAO;
 import com.fptu.prm391.projectprm.db.DatabaseHelper;
 import com.fptu.prm391.projectprm.db.InternshipDAO;
 import com.fptu.prm391.projectprm.model.Internship;
+import com.fptu.prm391.projectprm.util.SharedPrefManager;
 
 public class InternshipDetailActivity extends AppCompatActivity {
 
@@ -51,19 +53,34 @@ public class InternshipDetailActivity extends AppCompatActivity {
         btnApply = findViewById(R.id.btnApply);
         btnMap = findViewById(R.id.btnMap); // Ánh xạ nút bản đồ
 
-        // Lấy dữ liệu từ DAO
-        InternshipDAO dao = new InternshipDAO(new DatabaseHelper(this).getReadableDatabase());
-        Internship internship = dao.getInternshipById(internshipId);
+        // Lấy studentId từ SharedPrefManager
+        int studentId = SharedPrefManager.getInstance(this).getUser().getId();
+
+        // Kiểm tra xem đã apply chưa
+        DatabaseHelper dbHelper = new DatabaseHelper(this);
+        ApplicationDAO applicationDAO = new ApplicationDAO(dbHelper.getReadableDatabase());
+        boolean hasApplied = applicationDAO.hasApplied(studentId, internshipId);
+
+        // Lấy dữ liệu internship
+        InternshipDAO internshipDAO = new InternshipDAO(dbHelper.getReadableDatabase());
+        Internship internship = internshipDAO.getInternshipById(internshipId);
 
         if (internship != null) {
             bindInternshipData(internship);
 
-            // Xử lý nút APPLY
-            btnApply.setOnClickListener(v -> {
-                Intent intent = new Intent(InternshipDetailActivity.this, ApplyActivity.class);
-                intent.putExtra("INTERNSHIP_ID", internshipId);
-                startActivity(intent);
-            });
+            // Cấu hình nút Apply
+            if (hasApplied) {
+                btnApply.setText("Already Applied");
+                btnApply.setEnabled(false); // Vô hiệu hóa nút
+            } else {
+                btnApply.setText("Apply Now");
+                btnApply.setEnabled(true);
+                btnApply.setOnClickListener(v -> {
+                    Intent intent = new Intent(InternshipDetailActivity.this, ApplyActivity.class);
+                    intent.putExtra("INTERNSHIP_ID", internshipId);
+                    startActivity(intent);
+                });
+            }
 
             // Xử lý nút bản đồ
             btnMap.setOnClickListener(v -> {

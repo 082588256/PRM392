@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
-    android:layout_marginTop="4dp"
-    app:cardElevation="3dp"
-    app:cardCornerRadius="8dp">
+    android:layout_margin="8dp"
+    android:elevation="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,36 +16,39 @@
             android:id="@+id/tvAppTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Android Developer Intern"
-            android:textSize="16sp"
+            android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="@color/black" />
+            android:text="Job Title" />
 
         <TextView
             android:id="@+id/tvAppCompany"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Google Inc."
-            android:textColor="@color/colorPrimary"
-            android:textSize="14sp"
-            android:layout_marginTop="2dp" />
+            android:textSize="16sp"
+            android:text="Company Name" />
 
         <TextView
             android:id="@+id/tvAppStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Status: Pending"
-            android:textColor="@color/gray_dark"
-            android:layout_marginTop="6dp"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:text="Status: Pending" />
 
         <TextView
             android:id="@+id/tvAppAppliedAt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Applied on: 2025-07-03 14:22"
-            android:textColor="@color/gray"
-            android:textSize="12sp"
-            android:layout_marginTop="2dp" />
+            android:textSize="14sp"
+            android:text="Applied At: 2025-07-20" />
+
+        <Button
+            android:id="@+id/btnWithdraw"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="8dp"
+            android:text="Withdraw Application"
+            android:enabled="true" />
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>
