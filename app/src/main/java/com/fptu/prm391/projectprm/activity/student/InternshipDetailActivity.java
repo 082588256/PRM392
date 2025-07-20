@@ -7,6 +7,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -24,6 +25,7 @@ public class InternshipDetailActivity extends AppCompatActivity {
 
     private MaterialButton btnApply;
     private ImageButton btnMap;
+    private FloatingActionButton fabMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,27 +53,30 @@ public class InternshipDetailActivity extends AppCompatActivity {
         tvDescription = findViewById(R.id.tvDescription);
         tvRequirements = findViewById(R.id.tvRequirements);
         btnApply = findViewById(R.id.btnApply);
-        btnMap = findViewById(R.id.btnMap); // Ánh xạ nút bản đồ
+        btnMap = findViewById(R.id.btnMap);
+        fabMessage = findViewById(R.id.fabMessage); // nút chat
 
         // Lấy studentId từ SharedPrefManager
         int studentId = SharedPrefManager.getInstance(this).getUser().getId();
 
-        // Kiểm tra xem đã apply chưa
+        // Database
         DatabaseHelper dbHelper = new DatabaseHelper(this);
+        InternshipDAO internshipDAO = new InternshipDAO(dbHelper.getReadableDatabase());
         ApplicationDAO applicationDAO = new ApplicationDAO(dbHelper.getReadableDatabase());
+
+        // Kiểm tra apply
         boolean hasApplied = applicationDAO.hasApplied(studentId, internshipId);
 
         // Lấy dữ liệu internship
-        InternshipDAO internshipDAO = new InternshipDAO(dbHelper.getReadableDatabase());
         Internship internship = internshipDAO.getInternshipById(internshipId);
 
         if (internship != null) {
             bindInternshipData(internship);
 
-            // Cấu hình nút Apply
+            // Xử lý nút Apply
             if (hasApplied) {
                 btnApply.setText("Already Applied");
-                btnApply.setEnabled(false); // Vô hiệu hóa nút
+                btnApply.setEnabled(false);
             } else {
                 btnApply.setText("Apply Now");
                 btnApply.setEnabled(true);
@@ -84,10 +89,23 @@ public class InternshipDetailActivity extends AppCompatActivity {
 
             // Xử lý nút bản đồ
             btnMap.setOnClickListener(v -> {
-                Intent intent = new Intent(InternshipDetailActivity.this, com.fptu.prm391.projectprm.activity.common.MapActivity.class);
+                Intent intent = new Intent(InternshipDetailActivity.this,
+                        com.fptu.prm391.projectprm.activity.common.MapActivity.class);
                 intent.putExtra("LATITUDE", internship.getLatitude());
                 intent.putExtra("LONGITUDE", internship.getLongitude());
                 intent.putExtra("LOCATION_NAME", internship.getLocation());
+                startActivity(intent);
+            });
+
+            // ✅ Xử lý nút chat
+            fabMessage.setOnClickListener(v -> {
+                int recruiterId = internship.getRecruiterId();
+                String recruiterName = internship.getCompany();
+
+                Intent intent = new Intent(InternshipDetailActivity.this, ChatActivity.class);
+                intent.putExtra("SENDER_ID", studentId);
+                intent.putExtra("RECEIVER_ID", recruiterId);
+                intent.putExtra("RECEIVER_NAME", recruiterName);
                 startActivity(intent);
             });
 

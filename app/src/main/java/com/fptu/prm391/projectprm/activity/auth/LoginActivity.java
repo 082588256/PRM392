@@ -79,20 +79,65 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private boolean validateInput(String email, String password) {
-        if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            etEmail.setError("Vui lòng nhập email hợp lệ");
+        // Kiểm tra email
+        if (email.isEmpty()) {
+            etEmail.setError("Email không được để trống");
             etEmail.requestFocus();
             return false;
         }
 
-        if (password.isEmpty() || password.length() < 6) {
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            etEmail.setError("Email không đúng định dạng");
+            etEmail.requestFocus();
+            return false;
+        }
+
+        // Kiểm tra mật khẩu
+        if (password.isEmpty()) {
+            etPassword.setError("Mật khẩu không được để trống");
+            etPassword.requestFocus();
+            return false;
+        }
+
+        if (password.length() < 6) {
             etPassword.setError("Mật khẩu phải có ít nhất 6 ký tự");
+            etPassword.requestFocus();
+            return false;
+        }
+
+        if (!password.matches(".*[A-Z].*")) {
+            etPassword.setError("Mật khẩu phải chứa ít nhất 1 chữ in hoa");
+            etPassword.requestFocus();
+            return false;
+        }
+
+        if (!password.matches(".*[a-z].*")) {
+            etPassword.setError("Mật khẩu phải chứa ít nhất 1 chữ thường");
+            etPassword.requestFocus();
+            return false;
+        }
+
+        if (!password.matches(".*\\d.*")) {
+            etPassword.setError("Mật khẩu phải chứa ít nhất 1 chữ số");
+            etPassword.requestFocus();
+            return false;
+        }
+
+        if (!password.matches(".*[!@#$%^&*()_+=\\-{}\\[\\]:;\"'<>,.?/\\\\|~`].*")) {
+            etPassword.setError("Mật khẩu phải chứa ít nhất 1 ký tự đặc biệt");
+            etPassword.requestFocus();
+            return false;
+        }
+
+        if (!password.equals(password.trim())) {
+            etPassword.setError("Mật khẩu không được chứa khoảng trắng ở đầu hoặc cuối");
             etPassword.requestFocus();
             return false;
         }
 
         return true;
     }
+
 
     private void navigateToStudentActivity() {
         User user = SharedPrefManager.getInstance(this).getUser();

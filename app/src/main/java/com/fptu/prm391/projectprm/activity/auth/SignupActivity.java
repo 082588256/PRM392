@@ -111,36 +111,107 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     private boolean validateInput(String name, String email, String password, String role) {
+        // Validate họ tên: không được chứa số hoặc ký tự đặc biệt
         if (name.isEmpty()) {
             etName.setError("Vui lòng nhập họ tên");
             etName.requestFocus();
             return false;
         }
 
-        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if (!name.matches("^[\\p{L} .'-]+$")) {
+            etName.setError("Họ tên không hợp lệ (không chứa số hoặc ký tự đặc biệt)");
+            etName.requestFocus();
+            return false;
+        }
+
+        // Cập nhật kiểm tra university tương tự company
+        if (role.equalsIgnoreCase("student")) {
+            String university = etUniversity.getText().toString().trim();
+            if (university.isEmpty()) {
+                etUniversity.setError("Vui lòng nhập tên trường học");
+                etUniversity.requestFocus();
+                return false;
+            }
+
+            if (!university.matches("^[\\p{L}\\d .\\-]+$")) {
+                etUniversity.setError("Tên trường không hợp lệ");
+                etUniversity.requestFocus();
+                return false;
+            }
+        }
+
+        if (role.equalsIgnoreCase("recruiter")) {
+            String company = etCompany.getText().toString().trim();
+            if (company.isEmpty()) {
+                etCompany.setError("Vui lòng nhập tên công ty");
+                etCompany.requestFocus();
+                return false;
+            }
+
+            if (!company.matches("^[\\p{L}\\d .\\-]+$")) {
+                etCompany.setError("Tên công ty không hợp lệ");
+                etCompany.requestFocus();
+                return false;
+            }
+        }
+
+        // Validate email
+        if (email.isEmpty()) {
+            etEmail.setError("Email không được để trống");
+            etEmail.requestFocus();
+            return false;
+        }
+
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             etEmail.setError("Email không hợp lệ");
             etEmail.requestFocus();
             return false;
         }
 
-        if (password.isEmpty() || password.length() < 6) {
+        // Validate mật khẩu
+        if (password.isEmpty()) {
+            etPassword.setError("Mật khẩu không được để trống");
+            etPassword.requestFocus();
+            return false;
+        }
+
+        if (password.length() < 6) {
             etPassword.setError("Mật khẩu phải có ít nhất 6 ký tự");
             etPassword.requestFocus();
             return false;
         }
 
-        if (role.equalsIgnoreCase("student") && etUniversity.getText().toString().trim().isEmpty()) {
-            etUniversity.setError("Vui lòng nhập trường học");
-            etUniversity.requestFocus();
+        if (!password.matches(".*[A-Z].*")) {
+            etPassword.setError("Mật khẩu phải chứa ít nhất 1 chữ in hoa");
+            etPassword.requestFocus();
             return false;
         }
 
-        if (role.equalsIgnoreCase("recruiter") && etCompany.getText().toString().trim().isEmpty()) {
-            etCompany.setError("Vui lòng nhập công ty");
-            etCompany.requestFocus();
+        if (!password.matches(".*[a-z].*")) {
+            etPassword.setError("Mật khẩu phải chứa ít nhất 1 chữ thường");
+            etPassword.requestFocus();
+            return false;
+        }
+
+        if (!password.matches(".*\\d.*")) {
+            etPassword.setError("Mật khẩu phải chứa ít nhất 1 chữ số");
+            etPassword.requestFocus();
+            return false;
+        }
+
+        if (!password.matches(".*[!@#$%^&*()_+=\\-{}\\[\\]:;\"'<>,.?/\\\\|~`].*")) {
+            etPassword.setError("Mật khẩu phải chứa ít nhất 1 ký tự đặc biệt");
+            etPassword.requestFocus();
+            return false;
+        }
+
+        if (!password.equals(password.trim())) {
+            etPassword.setError("Mật khẩu không được chứa khoảng trắng ở đầu hoặc cuối");
+            etPassword.requestFocus();
             return false;
         }
 
         return true;
     }
+
 }

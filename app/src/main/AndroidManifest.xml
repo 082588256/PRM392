@@ -52,42 +52,16 @@
             android:name=".activity.recruiter.PostedInternshipsActivity"
             android:exported="false" />
 
-<!--        <activity-->
-<!--            android:name=".activity.student.ApplicationHistoryActivity"-->
-<!--            android:exported="false" />-->
-
-<!--        <activity-->
-<!--            android:name=".activity.student.InterviewSchedulingActivity"-->
-<!--            android:exported="false" />-->
-
-<!--        &lt;!&ndash; Recruiter Activities &ndash;&gt;-->
-<!--        <activity-->
-<!--            android:name=".activity.recruiter.PostInternshipActivity"-->
-<!--            android:exported="false" />-->
-
-<!--        <activity-->
-<!--            android:name=".activity.recruiter.ViewApplicationsActivity"-->
-<!--            android:exported="false" />-->
-
-<!--        &lt;!&ndash; Common Activities &ndash;&gt;-->
-<!--        <activity-->
-<!--            android:name=".activity.common.ChatActivity"-->
-<!--            android:exported="false"-->
-<!--            android:windowSoftInputMode="adjustResize" />-->
-
-<!--        <activity-->
-<!--            android:name=".activity.common.MapActivity"-->
-<!--            android:exported="false" />-->
-
-<!--        <activity-->
-<!--            android:name=".activity.common.ProfileActivity"-->
-<!--            android:exported="false" />-->
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyA7Vg7jARLrEYa1UVWITpLTO-YL5CJ8x9M"/>
 
         <activity android:name=".activity.common.MapActivity" />
+
+        <activity
+            android:name=".activity.student.ChatActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
 
     </application>
 
