@@ -36,13 +36,27 @@ public class SharedPrefManager {
 
     public User getUser() {
         SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
-        return new User(
-                sharedPreferences.getInt(KEY_USER_ID, -1),
-                sharedPreferences.getString(KEY_USER_EMAIL, null),
-                null, // Không lưu password
-                sharedPreferences.getString(KEY_USER_ROLE, null)
-        );
+//        return new User(
+//                sharedPreferences.getInt(KEY_USER_ID, -1),
+//                sharedPreferences.getString(KEY_USER_EMAIL, null),
+//                null, // Không lưu password
+//                sharedPreferences.getString(KEY_USER_ROLE, null)
+//        );
+//    }
+        int id = sharedPreferences.getInt(KEY_USER_ID, -1);
+        String email = sharedPreferences.getString(KEY_USER_EMAIL, null);
+        String role = sharedPreferences.getString(KEY_USER_ROLE, null);
+
+        // Nếu chưa login (không có email hoặc id = -1) trả về null hoặc user rỗng tùy bạn xử lý
+        if (id == -1 || email == null || role == null) {
+            return null;
+        }
+
+        // Password không lưu trong SharedPreferences, để null
+        return new User(id, email, null, role);
     }
+
+
 
     public boolean isLoggedIn() {
         SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);

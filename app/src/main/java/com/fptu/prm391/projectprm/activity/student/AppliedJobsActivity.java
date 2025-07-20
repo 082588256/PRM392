@@ -83,7 +83,7 @@ public class AppliedJobsActivity extends AppCompatActivity {
                     })
                     .setNegativeButton("Hủy", null)
                     .show();
-        });
+        }, false); // Set isRecruiterMode to false for student
 
         // Tab 2: Saved jobs (interviews)
         InterviewDAO interviewDAO = new InterviewDAO(dbHelper.getReadableDatabase());

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -52,11 +53,19 @@ public class PostedInternshipsActivity extends AppCompatActivity {
             recyclerPosted.setVisibility(View.VISIBLE);
         }
 
+        // Đăng xuất
         ImageButton btnLogout = findViewById(R.id.btnLogout);
         btnLogout.setOnClickListener(v -> {
             SharedPrefManager.getInstance(this).logout();
             Intent intent = new Intent(this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        });
+
+        // Sự kiện click vào icon đồng hồ để chuyển trang
+        ImageView imgHistoryIcon = findViewById(R.id.imgHistoryIcon);
+        imgHistoryIcon.setOnClickListener(v -> {
+            Intent intent = new Intent(this, HistoryActivity.class); // Đổi HistoryActivity thành activity của bạn nếu muốn
             startActivity(intent);
         });
 

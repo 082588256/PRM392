@@ -22,7 +22,13 @@
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="#333333" />
-
+        <ImageView
+            android:id="@+id/imgHistoryIcon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_history"
+            android:contentDescription="Lịch sử"
+            android:paddingRight="8dp"/>
         <ImageButton
             android:id="@+id/btnLogout"
             android:layout_width="30dp"

@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.fptu.prm391.projectprm.model.Application;
 import com.fptu.prm391.projectprm.model.Internship;
+import com.fptu.prm391.projectprm.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -139,6 +140,109 @@ public class ApplicationDAO {
 
         cursor.close();
         Log.d("ApplicationDAO", "Fetched " + applications.size() + " applications with internship for studentId " + studentId);
+        return applications;
+    }
+
+    public List<Application> getPendingApplicationsWithDetailsByRecruiter(int recruiterId) {
+        List<Application> applications = new ArrayList<>();
+        String query = "SELECT a.id, a.student_id, a.internship_id, a.resume_file, a.cover_letter, a.note, a.status, a.applied_at, " +
+                "i.id AS internship_id, i.title AS internship_title, i.company AS internship_company, " +
+                "u.id AS student_id, u.name AS student_name " +
+                "FROM applications a " +
+                "JOIN users u ON a.student_id = u.id " +
+                "JOIN internships i ON a.internship_id = i.id " +
+                "WHERE a.status = ? AND i.recruiter_id = ?";
+
+        Cursor cursor = db.rawQuery(query, new String[]{"Pending", String.valueOf(recruiterId)});
+
+        while (cursor.moveToNext()) {
+            Application app = new Application();
+            app.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
+            app.setStudentId(cursor.getInt(cursor.getColumnIndexOrThrow("student_id")));
+            app.setInternshipId(cursor.getInt(cursor.getColumnIndexOrThrow("internship_id")));
+            app.setResumeFile(cursor.getString(cursor.getColumnIndexOrThrow("resume_file")));
+            app.setCoverLetter(cursor.getString(cursor.getColumnIndexOrThrow("cover_letter")));
+            app.setNote(cursor.getString(cursor.getColumnIndexOrThrow("note")));
+            app.setStatus(cursor.getString(cursor.getColumnIndexOrThrow("status")));
+            app.setAppliedAt(cursor.getString(cursor.getColumnIndexOrThrow("applied_at")));
+
+            Internship internship = new Internship();
+            internship.setId(cursor.getInt(cursor.getColumnIndexOrThrow("internship_id")));
+            internship.setTitle(cursor.getString(cursor.getColumnIndexOrThrow("internship_title")));
+            internship.setCompany(cursor.getString(cursor.getColumnIndexOrThrow("internship_company")));
+
+            app.setInternship(internship);
+
+            applications.add(app);
+        }
+
+        cursor.close();
+        return applications;
+    }
+    //Hàm Đặt lịch hẹn phỏng vấn
+    public List<Application> getConfirmedApplicationsWithInterviewByRecruiter(int recruiterId) {
+        List<Application> applications = new ArrayList<>();
+
+        String query = "SELECT " +
+                "a.id, " +
+                "a.resume_file, " +
+                "a.cover_letter, " +
+                "a.status, " +
+                "u.email AS student_email, " +
+                "i.title AS internship_title, " +
+                "i.company AS internship_company, " +
+                "iv.scheduled_time, " +
+                "iv.status AS interview_status, " +
+                "iv.notes AS interview_notes " +
+                "FROM applications a " +
+                "JOIN users u ON a.student_id = u.id " +
+                "JOIN internships i ON a.internship_id = i.id " +
+                "LEFT JOIN interviews iv ON iv.application_id = a.id " +
+                "WHERE a.status = ? AND i.recruiter_id = ?";
+
+        Cursor cursor = db.rawQuery(query, new String[]{"Confirmed", String.valueOf(recruiterId)});
+
+        while (cursor.moveToNext()) {
+            Application app = new Application();
+            app.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
+            app.setResumeFile(cursor.getString(cursor.getColumnIndexOrThrow("resume_file")));
+            app.setCoverLetter(cursor.getString(cursor.getColumnIndexOrThrow("cover_letter")));
+            app.setStatus(cursor.getString(cursor.getColumnIndexOrThrow("status")));
+
+            // Gán thông tin User (email)
+            User student = new User();
+            student.setEmail(cursor.getString(cursor.getColumnIndexOrThrow("student_email")));
+            app.setStudent(student);
+
+            // Gán thông tin Internship (title + company)
+            Internship internship = new Internship();
+            internship.setTitle(cursor.getString(cursor.getColumnIndexOrThrow("internship_title")));
+            internship.setCompany(cursor.getString(cursor.getColumnIndexOrThrow("internship_company")));
+            app.setInternship(internship);
+
+            // Thông tin phỏng vấn (nếu có)
+            if (!cursor.isNull(cursor.getColumnIndexOrThrow("scheduled_time"))) {
+                app.setInterviewScheduledTime(cursor.getString(cursor.getColumnIndexOrThrow("scheduled_time")));
+            } else {
+                app.setInterviewScheduledTime("Chưa có");
+            }
+
+            if (!cursor.isNull(cursor.getColumnIndexOrThrow("interview_status"))) {
+                app.setInterviewStatus(cursor.getString(cursor.getColumnIndexOrThrow("interview_status")));
+            } else {
+                app.setInterviewStatus("Chưa cập nhật");
+            }
+
+            if (!cursor.isNull(cursor.getColumnIndexOrThrow("interview_notes"))) {
+                app.setInterviewNotes(cursor.getString(cursor.getColumnIndexOrThrow("interview_notes")));
+            } else {
+                app.setInterviewNotes("Không có");
+            }
+
+            applications.add(app);
+        }
+
+        cursor.close();
         return applications;
     }
 
