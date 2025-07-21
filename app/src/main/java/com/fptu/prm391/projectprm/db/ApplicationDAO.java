@@ -56,7 +56,13 @@ public class ApplicationDAO {
         Log.d("ApplicationDAO", "Insert application for studentId " + application.getStudentId() + ", result: " + result);
         return result;
     }
+    public boolean updateInterviewScheduledTime(int applicationId, String newTime) {
+        ContentValues values = new ContentValues();
+        values.put("scheduled_time", newTime);
 
+        int rows = db.update("Interviews", values, "application_id = ?", new String[]{String.valueOf(applicationId)});
+        return rows > 0;
+    }
     // Lấy danh sách ứng tuyển theo studentId
     public List<Application> getApplicationsByStudentId(int studentId) {
         List<Application> applications = new ArrayList<>();
@@ -191,6 +197,7 @@ public class ApplicationDAO {
                 "u.email AS student_email, " +
                 "i.title AS internship_title, " +
                 "i.company AS internship_company, " +
+                "iv.id AS interview_id, " +
                 "iv.scheduled_time, " +
                 "iv.status AS interview_status, " +
                 "iv.notes AS interview_notes " +
@@ -220,11 +227,22 @@ public class ApplicationDAO {
             internship.setCompany(cursor.getString(cursor.getColumnIndexOrThrow("internship_company")));
             app.setInternship(internship);
 
+
+            if (!cursor.isNull(cursor.getColumnIndexOrThrow("scheduled_time"))) {
+                app.setInterviewScheduledTime(cursor.getString(cursor.getColumnIndexOrThrow("scheduled_time")));
+            }
+            // Lấy interviewId nếu có
+            if (!cursor.isNull(cursor.getColumnIndexOrThrow("interview_id"))) {
+                app.setInterviewId(cursor.getInt(cursor.getColumnIndexOrThrow("interview_id")));
+            } else {
+                app.setInterviewId(0); // Hoặc -1 nếu muốn phân biệt rõ hơn
+            }
+
             // Thông tin phỏng vấn (nếu có)
             if (!cursor.isNull(cursor.getColumnIndexOrThrow("scheduled_time"))) {
                 app.setInterviewScheduledTime(cursor.getString(cursor.getColumnIndexOrThrow("scheduled_time")));
             } else {
-                app.setInterviewScheduledTime("Chưa có");
+                app.setInterviewScheduledTime(null);
             }
 
             if (!cursor.isNull(cursor.getColumnIndexOrThrow("interview_status"))) {
@@ -235,9 +253,17 @@ public class ApplicationDAO {
 
             if (!cursor.isNull(cursor.getColumnIndexOrThrow("interview_notes"))) {
                 app.setInterviewNotes(cursor.getString(cursor.getColumnIndexOrThrow("interview_notes")));
+
             } else {
                 app.setInterviewNotes("Không có");
             }
+
+            Log.d("DEBUG", "Interview ID for appId " + app.getId() + ": " + app.getInterviewId());
+
+            // Log dữ liệu để debug
+            Log.d("DEBUG", "Application ID: " + app.getId()
+                    + ", interviewId: " + app.getInterviewId()
+                    + ", scheduledTime: " + app.getInterviewScheduledTime());
 
             applications.add(app);
         }
@@ -245,6 +271,7 @@ public class ApplicationDAO {
         cursor.close();
         return applications;
     }
+
 
     // Cập nhật trạng thái ứng tuyển
     public int updateApplicationStatus(int applicationId, String status) {

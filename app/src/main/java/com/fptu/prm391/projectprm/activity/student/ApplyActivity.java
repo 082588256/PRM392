@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -18,10 +19,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.fptu.prm391.projectprm.R;
 import com.fptu.prm391.projectprm.db.ApplicationDAO;
 import com.fptu.prm391.projectprm.db.DatabaseHelper;
+import com.fptu.prm391.projectprm.db.InterviewDAO;
 import com.fptu.prm391.projectprm.model.Application;
+import com.fptu.prm391.projectprm.model.Interview;
 import com.fptu.prm391.projectprm.util.SharedPrefManager;
-
-import java.io.File;
 
 public class ApplyActivity extends AppCompatActivity {
     private static final int MAX_FILE_SIZE_MB = 5;
@@ -47,7 +48,6 @@ public class ApplyActivity extends AppCompatActivity {
         EditText edtCoverLetter = findViewById(R.id.edtCoverLetter);
         Button btnApply = findViewById(R.id.btnApply);
 
-        // Bấm chọn file CV
         ActivityResultLauncher<String[]> filePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.OpenDocument(),
                 uri -> {
@@ -62,9 +62,7 @@ public class ApplyActivity extends AppCompatActivity {
             filePickerLauncher.launch(new String[]{"application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
         });
 
-        // Bấm nộp đơn
         btnApply.setOnClickListener(v -> {
-            // Check file đã chọn chưa
             if (selectedCVUri == null) {
                 Toast.makeText(this, "Vui lòng tải lên file CV", Toast.LENGTH_SHORT).show();
                 return;
@@ -74,10 +72,9 @@ public class ApplyActivity extends AppCompatActivity {
                 Toast.makeText(this, "Vui lòng nhập thư giới thiệu", Toast.LENGTH_SHORT).show();
                 return;
             }
-            // Lấy user hiện tại
+
             int studentId = SharedPrefManager.getInstance(this).getUser().getId();
 
-            // Lưu vào database (chỉ lưu đường dẫn file, không copy file thật)
             SQLiteDatabase db = new DatabaseHelper(this).getWritableDatabase();
             ApplicationDAO dao = new ApplicationDAO(db);
 
@@ -86,19 +83,34 @@ public class ApplyActivity extends AppCompatActivity {
             app.setInternshipId(internshipId);
             app.setResumeFile(selectedCVUri.toString());
             app.setCoverLetter(coverLetter);
-            app.setNote(""); // Mục lưu ý bạn có thể để mặc định hoặc bổ sung EditText nếu muốn
+            app.setNote("");
+            Log.d("ApplyActivity", "Bắt đầu nộp đơn thực tập cho internshipId = " + internshipId);
 
             long result = dao.insertApplication(app);
             if (result != -1) {
+                // ✅ Tạo lịch phỏng vấn trống sau khi nộp đơn thành công
+                Interview interview = new Interview();
+                interview.setApplicationId((int) result); // ID ứng tuyển vừa tạo
+                interview.setScheduledTime(null); // Sẽ cập nhật sau
+                interview.setStatus("Proposed");  // ✅ Trạng thái khởi tạo
+                interview.setNotes("Chưa có");   // ✅ Ghi chú mặc định
+
+                InterviewDAO interviewDAO = new InterviewDAO(db);
+                long interviewResult = interviewDAO.insertInterview(interview);
+                Log.d("ApplyActivity", "Kết quả insert Interview ID: " + interviewResult);
+
+                if (interviewResult == -1) {
+                    Toast.makeText(this, "Lỗi khi tạo lịch phỏng vấn!", Toast.LENGTH_SHORT).show();
+                }
+
                 Toast.makeText(this, "Nộp đơn thành công!", Toast.LENGTH_SHORT).show();
-                finish(); // Hoặc chuyển về màn Application History
+                finish(); // Hoặc chuyển về màn lịch sử
             } else {
                 Toast.makeText(this, "Lỗi khi nộp đơn!", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    // Kiểm tra file đúng định dạng và dưới 5MB
     private boolean isValidCV(Uri uri) {
         String fileName = getFileName(uri);
         if (fileName == null) return false;
@@ -115,7 +127,6 @@ public class ApplyActivity extends AppCompatActivity {
         return true;
     }
 
-    // Lấy tên file từ uri
     private String getFileName(Uri uri) {
         String result = null;
         if ("content".equals(uri.getScheme())) {
@@ -138,7 +149,6 @@ public class ApplyActivity extends AppCompatActivity {
         return result;
     }
 
-    // Lấy kích thước file từ uri
     private long getFileSize(Uri uri) {
         long size = 0;
         if ("content".equals(uri.getScheme())) {
@@ -153,5 +163,4 @@ public class ApplyActivity extends AppCompatActivity {
         }
         return size;
     }
-
 }

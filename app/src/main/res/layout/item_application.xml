@@ -81,6 +81,15 @@
         android:layout_height="wrap_content"
         android:text="Approved"
         android:layout_marginTop="8dp"/>
+    <Button
+        android:id="@+id/btnReject"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reject"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@android:color/holo_red_light"
+        android:textColor="@android:color/white"
+        />
 
     <Button
         android:id="@+id/btnWithdraw"
@@ -90,5 +99,6 @@
         android:layout_marginTop="8dp"
         android:text="Withdraw Application"
         android:enabled="true" />
+
 
 </LinearLayout>

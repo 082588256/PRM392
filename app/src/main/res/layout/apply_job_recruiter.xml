@@ -84,6 +84,17 @@
             android:paddingTop="32dp"
             android:paddingBottom="16dp" />
 
+        <!-- Button lưu lịch hẹn -->
+        <Button
+            android:id="@+id/btnSaveSchedules"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Lưu lịch hẹn"
+            android:visibility="gone"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="@color/colorPrimary"
+            android:textColor="@android:color/white"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

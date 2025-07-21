@@ -13,6 +13,7 @@ public class Application implements Serializable {
     private String note;            // Lưu ý (nếu có)
     private String status;          // Pending, Under Review, Accepted, Rejected
     private String appliedAt;
+    private int interviewId; // ID từ bảng interviews
 
     private String interviewScheduledTime;
     private String interviewStatus;
@@ -42,7 +43,13 @@ public class Application implements Serializable {
         this.status = status;
         this.appliedAt = appliedAt;
     }
+    public int getInterviewId() {
+        return interviewId;
+    }
 
+    public void setInterviewId(int interviewId) {
+        this.interviewId = interviewId;
+    }
     // Interview
     public String getInterviewScheduledTime() {
         return interviewScheduledTime;

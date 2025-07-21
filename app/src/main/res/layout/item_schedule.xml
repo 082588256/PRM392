@@ -25,14 +25,18 @@
         android:textSize="14sp"
         android:textColor="#333333" />
 
-    <!-- Thời gian phỏng vấn -->
-    <TextView
-        android:id="@+id/tvInterviewTime"
+    <!-- Chọn thời gian phỏng vấn -->
+    <EditText
+        android:id="@+id/etInterviewDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Thời gian phỏng vấn: ..."
-        android:textSize="14sp"
-        android:textColor="#333333" />
+        android:hint="Chọn thời gian phỏng vấn"
+        android:focusable="false"
+        android:clickable="true"
+        android:inputType="none"
+        android:background="@drawable/bg_edittext"
+        android:padding="10dp"
+        android:textSize="14sp" />
 
     <!-- Trạng thái phỏng vấn -->
     <TextView
@@ -51,5 +55,17 @@
         android:text="Ghi chú: ..."
         android:textSize="14sp"
         android:textColor="#333333" />
+
+    <!-- Nút lưu lịch hẹn -->
+    <Button
+        android:id="@+id/btnSaveSchedules"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Lưu lịch hẹn"
+        android:visibility="gone"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/colorPrimary"
+        android:textColor="@android:color/white" />
 
 </LinearLayout>
