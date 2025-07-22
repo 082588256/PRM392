@@ -53,7 +53,9 @@ public class AppliedJobsActivity extends AppCompatActivity {
         DatabaseHelper dbHelper = DatabaseHelper.getInstance(this);
         applicationDAO = new ApplicationDAO(dbHelper.getWritableDatabase());
         Log.d("AppliedJobsActivity", "ApplicationDAO initialized");
-
+        int proposedCount = applicationDAO.countProposedInterviewsByStudent(studentId);
+        Log.d("AppliedJobsActivity", "Proposed interviews count: " + proposedCount);
+        Toast.makeText(this, "Số lượng lịch phỏng vấn đang chờ xác nhận: " + proposedCount, Toast.LENGTH_LONG).show();
         // Tab 1: Applied jobs
         List<Application> appliedList = applicationDAO.getApplicationsWithInternship(studentId);
         Log.d("AppliedJobsActivity", "Fetched " + appliedList.size() + " applications for studentId " + studentId);

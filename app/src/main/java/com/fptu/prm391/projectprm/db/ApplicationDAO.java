@@ -88,7 +88,36 @@ public class ApplicationDAO {
         Log.d("ApplicationDAO", "Fetched " + applications.size() + " applications for studentId " + studentId);
         return applications;
     }
+    public int countApplicationsByRecruiter(int recruiterId) {
+        int total = 0;
+        String query = "SELECT COUNT(a.id) AS total_applications " +
+                "FROM applications a " +
+                "JOIN internships i ON a.internship_id = i.id " +
+                "WHERE i.recruiter_id = ? AND a.status = 'Pending'";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(recruiterId)});
 
+        if (cursor.moveToFirst()) {
+            total = cursor.getInt(cursor.getColumnIndexOrThrow("total_applications"));
+        }
+
+        cursor.close();
+        return total;
+    }
+    public int countProposedInterviewsByStudent(int studentId) {
+        int count = 0;
+        String query = "SELECT COUNT(*) AS total_proposed_interviews " +
+                "FROM applications a " +
+                "JOIN interviews i ON a.id = i.application_id " +
+                "WHERE a.student_id = ? AND i.status = 'Proposed'";
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(studentId)});
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(cursor.getColumnIndexOrThrow("total_proposed_interviews"));
+        }
+        cursor.close();
+        Log.d("ApplicationDAO", "Proposed interviews for studentId " + studentId + ": " + count);
+        return count;
+    }
     // Lấy danh sách ứng tuyển với thông tin internship
     public List<Application> getApplicationsWithInternship(int studentId) {
         List<Application> applications = new ArrayList<>();

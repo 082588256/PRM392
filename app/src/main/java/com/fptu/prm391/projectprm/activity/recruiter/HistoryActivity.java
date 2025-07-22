@@ -38,9 +38,7 @@ public class HistoryActivity extends AppCompatActivity {
     private List<Application> scheduleList;
 
     private ApplicationDAO applicationDAO;
-
     private int recruiterId;
-
     private boolean isAppliedTab = true;
 
     @Override
@@ -48,10 +46,22 @@ public class HistoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.apply_job_recruiter);
 
+        // Lấy recruiterId
+        recruiterId = SharedPrefManager.getInstance(this).getUser().getId();
+
+        // Khởi tạo DB + DAO
+        DatabaseHelper dbHelper = new DatabaseHelper(this);
+        applicationDAO = new ApplicationDAO(dbHelper.getWritableDatabase());
+
+        // Thông báo số lượng đơn ứng tuyển
+        int totalApplications = applicationDAO.countApplicationsByRecruiter(recruiterId);
+        Toast.makeText(this, "Bạn có " + totalApplications + " đơn ứng tuyển.", Toast.LENGTH_LONG).show();
+
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
 
+        // Ánh xạ
         recyclerRecruiterJobs = findViewById(R.id.recycler_recruiter_jobs);
         tvEmptyRecruiterMessage = findViewById(R.id.tvEmptyRecruiterMessage);
         tvAppliedTab = findViewById(R.id.tv_applied);
@@ -65,11 +75,6 @@ public class HistoryActivity extends AppCompatActivity {
 
         applicationAdapter = new ApplicationAdapter(applicationList, null, true);
         scheduleAdapter = new ScheduleAdapter(scheduleList);
-
-        DatabaseHelper dbHelper = new DatabaseHelper(this);
-        applicationDAO = new ApplicationDAO(dbHelper.getWritableDatabase());
-
-        recruiterId = SharedPrefManager.getInstance(this).getUser().getId();
 
         applicationAdapter.setOnConfirmClickListener((application, position, newStatus) -> {
             int rowsUpdated = applicationDAO.updateApplicationStatus(application.getId(), newStatus);
@@ -93,18 +98,16 @@ public class HistoryActivity extends AppCompatActivity {
 
         btnSaveSchedules.setOnClickListener(v -> {
             Log.d("HistoryActivity", "Lưu lịch hẹn đã nhấn");
-
-            DatabaseHelper dbHelper1 = new DatabaseHelper(this);
-            InterviewDAO interviewDAO = new InterviewDAO(dbHelper1.getWritableDatabase());
+            InterviewDAO interviewDAO = new InterviewDAO(dbHelper.getWritableDatabase());
             boolean allSuccess = true;
 
             for (Application application : scheduleList) {
-                Log.d("DEBUG", "Application ID: " + application.getId()
-                        + ", interviewId: " + application.getInterviewId()
-                        + ", scheduledTime: " + application.getInterviewScheduledTime());
-
                 int interviewId = application.getInterviewId();
                 String newTime = application.getInterviewScheduledTime();
+
+                Log.d("DEBUG", "Application ID: " + application.getId()
+                        + ", interviewId: " + interviewId
+                        + ", scheduledTime: " + newTime);
 
                 if (interviewId > 0 && newTime != null && !newTime.isEmpty()) {
                     boolean updated = interviewDAO.updateInterviewTime(interviewId, newTime);
@@ -119,11 +122,9 @@ public class HistoryActivity extends AppCompatActivity {
                 }
             }
 
-            if (allSuccess) {
-                Toast.makeText(HistoryActivity.this, "Cập nhật lịch hẹn thành công!", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(HistoryActivity.this, "Một số lịch hẹn không thể cập nhật.", Toast.LENGTH_SHORT).show();
-            }
+            Toast.makeText(this,
+                    allSuccess ? "Cập nhật lịch hẹn thành công!" : "Một số lịch hẹn không thể cập nhật.",
+                    Toast.LENGTH_SHORT).show();
         });
 
         selectTab(true);
@@ -171,14 +172,9 @@ public class HistoryActivity extends AppCompatActivity {
         scheduleList.addAll(applicationDAO.getConfirmedApplicationsWithInterviewByRecruiter(recruiterId));
         Log.d("HistoryActivity", "Loaded " + scheduleList.size() + " scheduled appointments for recruiterId " + recruiterId);
 
-        DatabaseHelper dbHelper = new DatabaseHelper(this);
-        InterviewDAO interviewDAO = new InterviewDAO(dbHelper.getWritableDatabase());
+        InterviewDAO interviewDAO = new InterviewDAO(new DatabaseHelper(this).getWritableDatabase());
 
         for (Application application : scheduleList) {
-            Log.d("DEBUG", "Application ID: " + application.getId()
-                    + ", interviewId: " + application.getInterviewId()
-                    + ", scheduledTime: " + application.getInterviewScheduledTime());
-
             if (application.getInterviewId() == 0) {
                 Interview interview = new Interview();
                 interview.setApplicationId(application.getId());
@@ -188,7 +184,6 @@ public class HistoryActivity extends AppCompatActivity {
 
                 long interviewId = interviewDAO.insertInterview(interview);
                 Log.d("DEBUG", "Created interview for applicationId=" + application.getId() + " -> interviewId=" + interviewId);
-
                 application.setInterviewId((int) interviewId);
             }
         }

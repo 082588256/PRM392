@@ -4,19 +4,19 @@
 
 INSERT INTO users (email, password, role, name, university, company) VALUES
 -- Recruiter (ID 1)
-('recruiter1@company.com', 'password123', 'recruiter', 'Alice Recruiter', NULL, 'TechCorp'),
+('recruiter1@company.com', 'Password123@', 'recruiter', 'Alice Recruiter', NULL, 'TechCorp'),
 
 -- Student (ID 2)
-('student1@university.com', 'password123', 'student', 'Bob Student', 'FPT University', NULL),
+('student1@university.com', 'Password123@', 'student', 'Bob Student', 'FPT University', NULL),
 
 -- Recruiter (ID 3)
-('recruiter2@company.com', 'password123', 'recruiter', 'Charlie Recruiter', NULL, 'SoftViet'),
+('recruiter2@company.com', 'Password123@', 'recruiter', 'Charlie Recruiter', NULL, 'SoftViet'),
 
 -- Student (ID 4)
-('student2@university.com', 'password123', 'student', 'Diana Student', 'HCMUT', NULL),
+('student2@university.com', 'Password123@', 'student', 'Diana Student', 'HCMUT', NULL),
 
 -- Recruiter (ID 5)
-('recruiter3@company.com', 'password123', 'recruiter', 'Eve Recruiter', NULL, 'VinTech');
+('recruiter3@company.com', 'Password123@', 'recruiter', 'Eve Recruiter', NULL, 'VinTech');
 
 
 --internship
@@ -44,19 +44,3 @@ VALUES
 ('Network Intern', 'TechCorp', 'Hà Nội', '2 months', 'Networking', 'Setup routers/switches.', 'Cisco, Networking', '5,000,000 VNĐ', '2025-10-30', 1, 21.0285, 105.8542),
 ('Automation QA Intern', 'SoftViet', 'TP. Hồ Chí Minh', '3 months', 'Testing', 'Write test scripts.', 'Selenium, JUnit', '6,100,000 VNĐ', '2025-11-01', 3, 10.7769, 106.7009),
 ('Big Data Intern', 'VinTech', 'Hà Nội', '4 months', 'Data', 'Support big data pipelines.', 'Hadoop, Spark', '7,200,000 VNĐ', '2025-11-05', 5, 21.0285, 105.8542);
-
-
---interview_schedule
-INSERT INTO interview_schedules (application_id, scheduled_time, status) VALUES
--- Application ID = 1
-(1, '2025-07-20 09:00:00', 'Proposed'),
--- Application ID = 2
-(2, '2025-07-21 10:00:00', 'Proposed'),
--- Application ID = 3
-(3, '2025-07-24 13:30:00', 'Proposed');
-
---interview
-INSERT INTO interviews (application_id, scheduled_time, status, notes) VALUES
-(1, '2025-07-20 09:00:00', 'Proposed', 'Initial screening call'),
-(2, '2025-07-21 10:30:00', 'Confirmed', 'Technical interview via Zoom'),
-(3, '2025-07-22 14:00:00', 'Declined', 'Candidate unavailable');

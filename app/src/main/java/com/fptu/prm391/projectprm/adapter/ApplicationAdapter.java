@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,16 +21,27 @@ public class ApplicationAdapter extends RecyclerView.Adapter<ApplicationAdapter.
     private OnConfirmClickListener confirmClickListener;
     private final OnWithdrawClickListener withdrawClickListener;
     private final boolean isRecruiterMode;
+    private OnItemClickListener itemClickListener;
+
+    // Interface cho sinh viên click vào item (mở DatePicker chẳng hạn)
+    public interface OnItemClickListener {
+        void onItemClick(Application application);
+    }
 
     public interface OnConfirmClickListener {
         void onConfirmClick(Application application, int position, String newStatus);
     }
+
     public interface OnWithdrawClickListener {
         void onWithdrawClick(int applicationId);
     }
 
     public void setOnConfirmClickListener(OnConfirmClickListener listener) {
         this.confirmClickListener = listener;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.itemClickListener = listener;
     }
 
     public ApplicationAdapter(List<Application> applicationList, OnWithdrawClickListener withdrawListener, boolean isRecruiterMode) {
@@ -107,7 +119,6 @@ public class ApplicationAdapter extends RecyclerView.Adapter<ApplicationAdapter.
 
                 holder.btnConfirm.setVisibility(View.GONE);
             } else {
-                // Pending hoặc chưa có status
                 holder.btnConfirm.setText("Approve");
                 holder.btnConfirm.setEnabled(true);
                 holder.btnConfirm.setVisibility(View.VISIBLE);
@@ -142,6 +153,19 @@ public class ApplicationAdapter extends RecyclerView.Adapter<ApplicationAdapter.
 
             holder.btnConfirm.setVisibility(View.GONE);
             holder.btnReject.setVisibility(View.GONE);
+
+            // 👉 Xử lý khi sinh viên click vào item (để đổi thời gian phỏng vấn)
+            holder.itemView.setOnClickListener(v -> {
+                if ("Confirmed".equalsIgnoreCase(app.getInterviewStatus())) {
+                    Toast.makeText(v.getContext(), "Phỏng vấn đã xác nhận. Không thể thay đổi thời gian!", Toast.LENGTH_SHORT).show();
+                } else if ("Declined".equalsIgnoreCase(app.getInterviewStatus())) {
+                    Toast.makeText(v.getContext(), "Phỏng vấn đã bị từ chối. Không thể thay đổi!", Toast.LENGTH_SHORT).show();
+                } else {
+                    if (itemClickListener != null) {
+                        itemClickListener.onItemClick(app);
+                    }
+                }
+            });
         }
     }
 
@@ -150,7 +174,7 @@ public class ApplicationAdapter extends RecyclerView.Adapter<ApplicationAdapter.
         return applicationList != null ? applicationList.size() : 0;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         private TextView tvTitle, tvCompany, tvStatus, tvAppliedAt;
         private TextView tvInterviewTime, tvInterviewStatus, tvInterviewNotes;
         private Button btnConfirm, btnReject, btnWithdraw;
@@ -170,7 +194,7 @@ public class ApplicationAdapter extends RecyclerView.Adapter<ApplicationAdapter.
         }
 
         public void bind(Application application) {
-            // Optional: Log hoặc xử lý nếu cần
+            // Optional: setup if needed
         }
     }
 }

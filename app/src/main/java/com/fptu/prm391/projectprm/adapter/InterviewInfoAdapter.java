@@ -10,7 +10,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.fptu.prm391.projectprm.R;
 import com.fptu.prm391.projectprm.db.InterviewDAO;
 import com.fptu.prm391.projectprm.model.InterviewInfo;
@@ -22,7 +24,6 @@ public class InterviewInfoAdapter extends RecyclerView.Adapter<InterviewInfoAdap
     private List<InterviewInfo> interviewList;
     private InterviewDAO interviewDAO;
 
-    // Bắt buộc truyền InterviewDAO vào constructor để update DB (nên dùng)
     public InterviewInfoAdapter(List<InterviewInfo> interviewList, InterviewDAO interviewDAO) {
         this.interviewList = interviewList;
         this.interviewDAO = interviewDAO;
@@ -72,17 +73,34 @@ public class InterviewInfoAdapter extends RecyclerView.Adapter<InterviewInfoAdap
             tvStatus.setText("Status: " + info.getStatus());
             tvNotes.setText("Notes: " + (info.getNotes() == null ? "" : info.getNotes()));
 
-            if (info.getStatus() != null && info.getStatus().trim().equalsIgnoreCase("Proposed")) {
-                llActionButtons.setVisibility(View.VISIBLE);
-            } else {
-                llActionButtons.setVisibility(View.GONE);
-            }
+            String status = info.getStatus() != null ? info.getStatus().trim() : "";
+
+            boolean isProposed = status.equalsIgnoreCase("Proposed");
+
+            // Cập nhật nút và trạng thái tương tác dựa vào status
+            llActionButtons.setVisibility(isProposed ? View.VISIBLE : View.GONE);
+            btnAccept.setEnabled(isProposed);
+            btnDecline.setEnabled(isProposed);
+
+            tvTime.setTextColor(ContextCompat.getColor(itemView.getContext(),
+                    isProposed ? android.R.color.black : android.R.color.darker_gray));
+
+            // Không enable/disable tvTime tại đây – sẽ xử lý trực tiếp trong onClick
+            tvTime.setOnClickListener(v -> {
+                String currentStatus = info.getStatus() != null ? info.getStatus().trim() : "";
+
+                if (currentStatus.equalsIgnoreCase("Confirmed") || currentStatus.equalsIgnoreCase("Declined")) {
+                    Toast.makeText(itemView.getContext(), "Không thể thay đổi thời gian khi đã xác nhận!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Toast.makeText(itemView.getContext(), "Hiện DatePicker ở đây", Toast.LENGTH_SHORT).show();
+            });
 
             btnAccept.setOnClickListener(v -> {
-                // Cập nhật trạng thái UI
                 info.setStatus("Confirmed");
                 notifyItemChanged(pos);
-                // Cập nhật DB
+
                 if (interviewDAO != null) {
                     int updated = interviewDAO.updateInterviewStatus(info.getInterviewId(), "Confirmed");
                     if (updated > 0) {
@@ -96,6 +114,7 @@ public class InterviewInfoAdapter extends RecyclerView.Adapter<InterviewInfoAdap
             btnDecline.setOnClickListener(v -> {
                 info.setStatus("Declined");
                 notifyItemChanged(pos);
+
                 if (interviewDAO != null) {
                     int updated = interviewDAO.updateInterviewStatus(info.getInterviewId(), "Declined");
                     if (updated > 0) {

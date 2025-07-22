@@ -145,4 +145,31 @@ public class InterviewDAO {
         cursor.close();
         return list;
     }
+
+
+    public List<Interview> getProposedInterviewsByStudent(int studentId) {
+        List<Interview> interviews = new ArrayList<>();
+
+        String query = "SELECT i.* FROM " + TABLE_NAME + " i " +
+                "JOIN " + ApplicationDAO.TABLE_NAME + " a ON i.application_id = a.id " +
+                "WHERE a.student_id = ? AND i.status = ?";
+
+        Cursor cursor = db.rawQuery(query, new String[]{
+                String.valueOf(studentId),
+                "Proposed"
+        });
+
+        while (cursor.moveToNext()) {
+            Interview interview = new Interview();
+            interview.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+            interview.setApplicationId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_APPLICATION_ID)));
+            interview.setScheduledTime(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SCHEDULED_TIME)));
+            interview.setStatus(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STATUS)));
+            interview.setNotes(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NOTES)));
+            interviews.add(interview);
+        }
+
+        cursor.close();
+        return interviews;
+    }
 }
