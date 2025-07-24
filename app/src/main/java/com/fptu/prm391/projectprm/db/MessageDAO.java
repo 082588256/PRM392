@@ -4,6 +4,8 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import com.fptu.prm391.projectprm.model.Message;
+import com.fptu.prm391.projectprm.model.User;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,18 +71,51 @@ public class MessageDAO {
         return messages;
     }
 
-    public int markMessagesAsRead(int senderId, int receiverId) {
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_READ, 1);
+    public List<User> getAllChatStudentsForRecruiter(int recruiterId) {
+        List<User> students = new ArrayList<>();
+        String query = "SELECT DISTINCT u.id, u.name, u.email " +
+                "FROM messages m " +
+                "JOIN users u ON (u.id = m.sender_id OR u.id = m.receiver_id) " +
+                "WHERE (m.sender_id = ? OR m.receiver_id = ?) AND u.role = 'student' AND u.id != ?";
 
-        return db.update(TABLE_NAME, values,
-                COLUMN_SENDER_ID + " = ? AND " + COLUMN_RECEIVER_ID + " = ?",
-                new String[]{String.valueOf(senderId), String.valueOf(receiverId)});
+        Cursor cursor = db.rawQuery(query, new String[]{
+                String.valueOf(recruiterId), String.valueOf(recruiterId), String.valueOf(recruiterId)
+        });
+
+        while (cursor.moveToNext()) {
+            User user = new User();
+            user.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
+            user.setName(cursor.getString(cursor.getColumnIndexOrThrow("name")));
+            user.setEmail(cursor.getString(cursor.getColumnIndexOrThrow("email")));
+            students.add(user);
+        }
+        cursor.close();
+        return students;
     }
 
-    public int deleteMessage(int messageId) {
-        return db.delete(TABLE_NAME,
-                COLUMN_ID + " = ?",
-                new String[]{String.valueOf(messageId)});
+    public Message getLastMessageBetween(int id1, int id2) {
+        String query = "SELECT * FROM " + TABLE_NAME +
+                " WHERE (" + COLUMN_SENDER_ID + "=? AND " + COLUMN_RECEIVER_ID + "=?) " +
+                " OR (" + COLUMN_SENDER_ID + "=? AND " + COLUMN_RECEIVER_ID + "=?) " +
+                " ORDER BY " + COLUMN_SENT_AT + " DESC LIMIT 1";
+
+        Cursor cursor = db.rawQuery(query, new String[]{
+                String.valueOf(id1), String.valueOf(id2),
+                String.valueOf(id2), String.valueOf(id1)
+        });
+
+        Message msg = null;
+        if (cursor.moveToFirst()) {
+            msg = new Message();
+            msg.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+            msg.setSenderId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_SENDER_ID)));
+            msg.setReceiverId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_RECEIVER_ID)));
+            msg.setContent(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CONTENT)));
+            msg.setSentAt(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SENT_AT)));
+            msg.setRead(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_READ)) == 1);
+        }
+        cursor.close();
+        return msg;
     }
+
 }

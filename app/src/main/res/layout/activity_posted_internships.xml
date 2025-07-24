@@ -1,16 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="0dp">
 
-    <!-- Thanh top gồm nút logout -->
+    <!-- Thanh top gồm tiêu đề và các icon chức năng -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="end"
-        android:padding="16dp">
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="8dp">
 
         <TextView
             android:id="@+id/tv_title"
@@ -21,22 +25,29 @@
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="#333333" />
+
+        <ImageButton
+            android:id="@+id/btnMessages"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_message"
+            android:layout_marginEnd="8dp"/>
+
         <ImageView
             android:id="@+id/imgHistoryIcon"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:src="@drawable/ic_history"
-            android:contentDescription="Lịch sử"
-            android:paddingRight="8dp"/>
+            android:layout_marginEnd="8dp"/>
+
         <ImageButton
             android:id="@+id/btnLogout"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:src="@drawable/ic_logout"
-            android:contentDescription="Đăng xuất"
             android:background="@android:color/transparent"
-            android:scaleType="centerInside"
-            android:padding="0dp" />
+            android:scaleType="centerInside"/>
     </LinearLayout>
 
     <!-- Text thông báo rỗng -->
@@ -51,20 +62,21 @@
         android:visibility="gone"
         android:paddingTop="32dp"
         android:paddingBottom="16dp" />
-
+    <!-- Danh sách thực tập -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_posted_internships"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="vertical"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"/>
+    <!-- Nút thêm thực tập -->
     <Button
         android:id="@+id/btnAddInternship"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Add new internship"
-        android:layout_margin="12dp"/>
-
-    <!-- Danh sách thực tập -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_posted_internships"
-        android:layout_width="match_parent"
-        android:paddingLeft="-10dp"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:scrollbars="vertical" />
+        android:layout_margin="16dp"
+        android:textAllCaps="false"/>
 </LinearLayout>
