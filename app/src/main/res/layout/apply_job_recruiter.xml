@@ -61,17 +61,18 @@
         </LinearLayout>
 
         <!-- RecyclerView -->
+
+        <!-- Text thông báo khi không có dữ liệu -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_recruiter_jobs"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:clipToPadding="false"
+            android:overScrollMode="never"
             android:paddingTop="12dp"
-            android:paddingBottom="12dp"
-            android:overScrollMode="never" />
+            android:paddingBottom="12dp" />
 
-        <!-- Text thông báo khi không có dữ liệu -->
         <TextView
             android:id="@+id/tvEmptyRecruiterMessage"
             android:layout_width="match_parent"

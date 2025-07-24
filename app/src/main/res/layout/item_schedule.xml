@@ -48,15 +48,19 @@
         android:textColor="#333333" />
 
     <!-- Ghi chú phỏng vấn -->
-    <TextView
+
+    <EditText
         android:id="@+id/tvInterviewNotes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Ghi chú: ..."
+        android:hint="Nhập ghi chú phỏng vấn"
+        android:textColor="#333333"
         android:textSize="14sp"
-        android:textColor="#333333" />
-
-    <!-- Nút lưu lịch hẹn -->
+        android:background="@drawable/bg_edittext"
+        android:padding="10dp"
+        android:inputType="textMultiLine"
+        android:minLines="3"
+        android:gravity="top|start" />
     <Button
         android:id="@+id/btnSaveSchedules"
         android:layout_width="match_parent"

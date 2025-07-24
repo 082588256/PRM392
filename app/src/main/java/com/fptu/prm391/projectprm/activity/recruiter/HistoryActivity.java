@@ -110,8 +110,8 @@ public class HistoryActivity extends AppCompatActivity {
                         + ", scheduledTime: " + newTime);
 
                 if (interviewId > 0 && newTime != null && !newTime.isEmpty()) {
-                    boolean updated = interviewDAO.updateInterviewTime(interviewId, newTime);
-                    if (!updated) {
+                    String notes = application.getInterviewNotes(); // <- Lấy notes từ object
+                    boolean updated = interviewDAO.updateInterview(interviewId, newTime, notes);                    if (!updated) {
                         allSuccess = false;
                         Log.e("HistoryActivity", "Không thể cập nhật lịch hẹn cho interviewId: " + interviewId);
                     } else {

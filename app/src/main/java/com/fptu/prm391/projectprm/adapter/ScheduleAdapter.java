@@ -2,6 +2,8 @@ package com.fptu.prm391.projectprm.adapter;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,55 +64,94 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.Schedu
 
         // Thời gian phỏng vấn
         String scheduledTime = app.getInterviewScheduledTime();
-        Log.d("DEBUG", "Interview time at position " + position + ": " + app.getInterviewScheduledTime());
+        Log.d("DEBUG", "Interview time at position " + position + ": " + scheduledTime);
 
         holder.etInterviewDate.setText((scheduledTime != null && !scheduledTime.isEmpty())
                 ? scheduledTime
                 : "Chọn thời gian");
 
-        holder.etInterviewDate.setOnClickListener(v -> {
-            final Calendar calendar = Calendar.getInstance();
-            int year = calendar.get(Calendar.YEAR);
-            int month = calendar.get(Calendar.MONTH);
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
+        String status = app.getInterviewStatus();
 
-            // Bước 1: Mở DatePicker
-            DatePickerDialog datePickerDialog = new DatePickerDialog(v.getContext(),
-                    (DatePicker view, int selectedYear, int selectedMonth, int selectedDay) -> {
-                        calendar.set(Calendar.YEAR, selectedYear);
-                        calendar.set(Calendar.MONTH, selectedMonth);
-                        calendar.set(Calendar.DAY_OF_MONTH, selectedDay);
+        if (status != null && status.equalsIgnoreCase("confirmed")) {
+            // Disable chọn ngày giờ
+            holder.etInterviewDate.setEnabled(false);
+            holder.etInterviewDate.setClickable(false);
+            holder.etInterviewDate.setFocusable(false);
+            holder.etInterviewDate.setTextColor(holder.etInterviewDate.getContext()
+                    .getResources().getColor(android.R.color.darker_gray));
 
-                        // Bước 2: Sau khi chọn ngày, mở TimePicker
-                        TimePickerDialog timePickerDialog = new TimePickerDialog(v.getContext(),
-                                (TimePicker timeView, int hourOfDay, int minute) -> {
-                                    calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                                    calendar.set(Calendar.MINUTE, minute);
-                                    calendar.set(Calendar.SECOND, 0);
+            // Disable ghi chú
+            holder.etInterviewNotes.setEnabled(false);
+            holder.etInterviewNotes.setFocusable(false);
+            holder.etInterviewNotes.setTextColor(holder.etInterviewNotes.getContext()
+                    .getResources().getColor(android.R.color.darker_gray));
+        } else {
+            // Enable chọn ngày giờ
+            holder.etInterviewDate.setEnabled(true);
+            holder.etInterviewDate.setClickable(true);
+            holder.etInterviewDate.setFocusable(false);
+            holder.etInterviewDate.setTextColor(holder.etInterviewDate.getContext()
+                    .getResources().getColor(android.R.color.black));
 
-                                    // Định dạng thời gian
-                                    String datetime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-                                            .format(calendar.getTime());
+            // Cho phép chọn ngày giờ
+            holder.etInterviewDate.setOnClickListener(v -> {
+                final Calendar calendar = Calendar.getInstance();
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-                                    holder.etInterviewDate.setText(datetime);
-                                    app.setInterviewScheduledTime(datetime); // cập nhật vào Application
-                                },
-                                calendar.get(Calendar.HOUR_OF_DAY),
-                                calendar.get(Calendar.MINUTE),
-                                true);
-                        timePickerDialog.show();
-                    }, year, month, day);
-            datePickerDialog.show();
-        });
+                // Bước 1: Chọn ngày
+                DatePickerDialog datePickerDialog = new DatePickerDialog(v.getContext(),
+                        (DatePicker view, int selectedYear, int selectedMonth, int selectedDay) -> {
+                            calendar.set(Calendar.YEAR, selectedYear);
+                            calendar.set(Calendar.MONTH, selectedMonth);
+                            calendar.set(Calendar.DAY_OF_MONTH, selectedDay);
+
+                            // Bước 2: Chọn giờ
+                            TimePickerDialog timePickerDialog = new TimePickerDialog(v.getContext(),
+                                    (TimePicker timeView, int hourOfDay, int minute) -> {
+                                        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                                        calendar.set(Calendar.MINUTE, minute);
+                                        calendar.set(Calendar.SECOND, 0);
+
+                                        String datetime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                                                .format(calendar.getTime());
+
+                                        holder.etInterviewDate.setText(datetime);
+                                        app.setInterviewScheduledTime(datetime); // Gán lại
+                                    },
+                                    calendar.get(Calendar.HOUR_OF_DAY),
+                                    calendar.get(Calendar.MINUTE),
+                                    true);
+                            timePickerDialog.show();
+                        }, year, month, day);
+                datePickerDialog.show();
+            });
+
+            // Enable ghi chú
+            holder.etInterviewNotes.setEnabled(true);
+            holder.etInterviewNotes.setFocusable(true);
+            holder.etInterviewNotes.setTextColor(holder.etInterviewNotes.getContext()
+                    .getResources().getColor(android.R.color.black));
+        }
 
         // Trạng thái
         holder.tvInterviewStatus.setText("Trạng thái: " +
-                (app.getInterviewStatus() != null ? app.getInterviewStatus() : "Chưa cập nhật"));
+                (status != null ? status : "Chưa cập nhật"));
 
         // Ghi chú
-        holder.tvInterviewNotes.setText("Ghi chú: " +
-                (app.getInterviewNotes() != null ? app.getInterviewNotes() : "Không có"));
+        holder.etInterviewNotes.setText(app.getInterviewNotes());
+        holder.etInterviewNotes.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable editable) {
+                app.setInterviewNotes(editable.toString());
+            }
+
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
     }
+
 
     @Override
     public int getItemCount() {
@@ -118,16 +159,16 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.Schedu
     }
 
     static class ScheduleViewHolder extends RecyclerView.ViewHolder {
-        TextView tvStudentEmail, tvInternshipCompany, tvInterviewStatus, tvInterviewNotes;
-        EditText etInterviewDate;
+        TextView tvStudentEmail, tvInternshipCompany, tvInterviewStatus;
+        EditText etInterviewDate, etInterviewNotes;
 
         public ScheduleViewHolder(@NonNull View itemView) {
             super(itemView);
             tvStudentEmail = itemView.findViewById(R.id.tvStudentEmail);
             tvInternshipCompany = itemView.findViewById(R.id.tvInternshipCompany);
             tvInterviewStatus = itemView.findViewById(R.id.tvInterviewStatus);
-            tvInterviewNotes = itemView.findViewById(R.id.tvInterviewNotes);
             etInterviewDate = itemView.findViewById(R.id.etInterviewDate);
+            etInterviewNotes = itemView.findViewById(R.id.tvInterviewNotes); // Là EditText
         }
     }
 }

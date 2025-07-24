@@ -3,6 +3,7 @@ package com.fptu.prm391.projectprm.db;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.fptu.prm391.projectprm.model.Interview;
 import com.fptu.prm391.projectprm.model.InterviewInfo;
@@ -29,7 +30,8 @@ public class InterviewDAO {
             COLUMN_SCHEDULED_TIME + " TEXT NOT NULL," +
             COLUMN_STATUS + " TEXT DEFAULT 'Proposed'," +
             COLUMN_NOTES + " TEXT," +
-            "FOREIGN KEY(" + COLUMN_APPLICATION_ID + ") REFERENCES " + ApplicationDAO.TABLE_NAME + "(" + ApplicationDAO.COLUMN_ID + ")" +
+            "FOREIGN KEY(" + COLUMN_APPLICATION_ID + ") REFERENCES " +
+            ApplicationDAO.TABLE_NAME + "(" + ApplicationDAO.COLUMN_ID + ")" +
             ")";
 
     private SQLiteDatabase db;
@@ -38,6 +40,7 @@ public class InterviewDAO {
         this.db = db;
     }
 
+    // ======== INSERT ========
     public long insertInterview(Interview interview) {
         ContentValues values = new ContentValues();
         values.put(COLUMN_APPLICATION_ID, interview.getApplicationId());
@@ -51,14 +54,16 @@ public class InterviewDAO {
         values.put(COLUMN_STATUS, interview.getStatus());
         values.put(COLUMN_NOTES, interview.getNotes());
 
-        return db.insert(TABLE_NAME, null, values);
+        long id = db.insert(TABLE_NAME, null, values);
+        Log.d("INTERVIEW_INSERT", "Inserted interview with ID: " + id);
+        return id;
     }
 
+    // ======== SELECT ========
     public List<Interview> getInterviewsByApplicationId(int applicationId) {
         List<Interview> interviews = new ArrayList<>();
 
-        Cursor cursor = db.query(TABLE_NAME,
-                null,
+        Cursor cursor = db.query(TABLE_NAME, null,
                 COLUMN_APPLICATION_ID + " = ?",
                 new String[]{String.valueOf(applicationId)},
                 null, null, COLUMN_SCHEDULED_TIME + " ASC");
@@ -76,60 +81,15 @@ public class InterviewDAO {
         return interviews;
     }
 
-    public int updateScheduledTimeByApplicationId(int applicationId, String newScheduledTime) {
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_SCHEDULED_TIME, newScheduledTime);
-
-        return db.update(TABLE_NAME, values,
-                COLUMN_APPLICATION_ID + " = ?",
-                new String[]{String.valueOf(applicationId)});
-    }
-
-    public boolean updateInterviewTime(int interviewId, String newTime) {
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_SCHEDULED_TIME, newTime);
-
-        int rows = db.update(TABLE_NAME, values,
-                COLUMN_ID + " = ?",
-                new String[]{String.valueOf(interviewId)});
-        return rows > 0;
-    }
-
-    public int updateInterviewStatus(int interviewId, String status) {
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_STATUS, status);
-
-        return db.update(TABLE_NAME, values,
-                COLUMN_ID + " = ?",
-                new String[]{String.valueOf(interviewId)});
-    }
-
-    public boolean updateInterviewTimeAndStatus(int interviewId, String time, String status) {
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_SCHEDULED_TIME, time);
-        values.put(COLUMN_STATUS, status);
-
-        int rows = db.update(TABLE_NAME, values,
-                COLUMN_ID + " = ?",
-                new String[]{String.valueOf(interviewId)});
-        return rows > 0;
-    }
-
-    public int deleteInterview(int interviewId) {
-        return db.delete(TABLE_NAME,
-                COLUMN_ID + " = ?",
-                new String[]{String.valueOf(interviewId)});
-    }
-
     public List<InterviewInfo> getInterviewInfoByStudentId(int studentId) {
         List<InterviewInfo> list = new ArrayList<>();
 
-        String sql = "SELECT i.id, u.email, i.scheduled_time, i.status, i.notes, s.company " +
+        String sql = "SELECT i.id, u.email, i.scheduled_time, i.status, i.notes, s.company, a.status AS application_status " +
                 "FROM interviews i " +
                 "JOIN applications a ON i.application_id = a.id " +
                 "JOIN users u ON a.student_id = u.id " +
                 "JOIN internships s ON a.internship_id = s.id " +
-                "WHERE a.student_id = ?";
+                "WHERE a.student_id = ? AND a.status = 'Confirmed'";
 
         Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(studentId)});
         while (cursor.moveToNext()) {
@@ -145,7 +105,6 @@ public class InterviewDAO {
         cursor.close();
         return list;
     }
-
 
     public List<Interview> getProposedInterviewsByStudent(int studentId) {
         List<Interview> interviews = new ArrayList<>();
@@ -171,5 +130,66 @@ public class InterviewDAO {
 
         cursor.close();
         return interviews;
+    }
+
+    // ======== UPDATE ========
+    public int updateScheduledTimeByApplicationId(int applicationId, String newScheduledTime) {
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_SCHEDULED_TIME, newScheduledTime);
+
+        int rows = db.update(TABLE_NAME, values,
+                COLUMN_APPLICATION_ID + " = ?",
+                new String[]{String.valueOf(applicationId)});
+        Log.d("INTERVIEW_UPDATE", "Rows affected: " + rows);
+        return rows;
+    }
+
+    public boolean updateInterview(int interviewId, String scheduledTime, String notes) {
+        ContentValues values = new ContentValues();
+        values.put("scheduled_time", scheduledTime);
+        values.put("notes", notes);
+
+        int rows = db.update("interviews", values, "id = ?", new String[]{String.valueOf(interviewId)});
+        return rows > 0;
+    }
+
+    public int updateInterviewStatus(int interviewId, String status) {
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_STATUS, status);
+
+        return db.update(TABLE_NAME, values,
+                COLUMN_ID + " = ?",
+                new String[]{String.valueOf(interviewId)});
+    }
+
+    public boolean updateInterviewTimeAndStatus(int interviewId, String time, String status) {
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_SCHEDULED_TIME, time);
+        values.put(COLUMN_STATUS, status);
+
+        int rows = db.update(TABLE_NAME, values,
+                COLUMN_ID + " = ?",
+                new String[]{String.valueOf(interviewId)});
+        Log.d("UPDATE_TIME_STATUS", "Updated interviewId " + interviewId + " to time " + time + ", status: " + status + ", affected: " + rows);
+        return rows > 0;
+    }
+
+    // ✅ NEW: Update ghi chú (notes)
+    public boolean updateInterviewNotes(int interviewId, String notes) {
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NOTES, notes);
+
+        int rows = db.update(TABLE_NAME, values,
+                COLUMN_ID + " = ?",
+                new String[]{String.valueOf(interviewId)});
+        Log.d("UPDATE_NOTES", "Update notes for interviewId " + interviewId + ", affected: " + rows);
+        return rows > 0;
+    }
+
+    // ======== DELETE ========
+    public int deleteInterview(int interviewId) {
+        return db.delete(TABLE_NAME,
+                COLUMN_ID + " = ?",
+                new String[]{String.valueOf(interviewId)});
     }
 }
