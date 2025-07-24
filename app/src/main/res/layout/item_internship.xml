@@ -25,6 +25,16 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Đang nhận hồ sơ"
+            android:textColor="@color/colorPrimary"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <TextView
             android:id="@+id/tvCompany"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

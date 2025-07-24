@@ -3,6 +3,7 @@ package com.fptu.prm391.projectprm.activity.recruiter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -53,6 +54,12 @@ public class PostedInternshipsActivity extends AppCompatActivity {
             recyclerPosted.setVisibility(View.VISIBLE);
         }
 
+        Button btnAddInternship = findViewById(R.id.btnAddInternship);
+        btnAddInternship.setOnClickListener(v -> {
+            Intent intent = new Intent(this, AddInternshipActivity.class);
+            startActivity(intent);
+        });
+
         // Đăng xuất
         ImageButton btnLogout = findViewById(R.id.btnLogout);
         btnLogout.setOnClickListener(v -> {
@@ -70,12 +77,31 @@ public class PostedInternshipsActivity extends AppCompatActivity {
         });
 
         adapter = new InternshipAdapter(postedList, internship -> {
-            // Chuyển đến InternshipDetailActivity nếu cần
-            Intent intent = new Intent(this, InternshipDetailActivity.class);
+            Intent intent = new Intent(this, RecruiterInternshipDetailActivity.class);
             intent.putExtra("internship_id", internship.getId());
             startActivity(intent);
         });
 
         recyclerPosted.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        reloadInternships();
+    }
+
+    private void reloadInternships() {
+        int recruiterId = SharedPrefManager.getInstance(this).getUser().getId();
+        InternshipDAO dao = new InternshipDAO(new DatabaseHelper(this).getReadableDatabase());
+        List<Internship> postedList = dao.getInternshipsByRecruiterId(recruiterId);
+        adapter.updateList(postedList); // Viết thêm hàm này trong InternshipAdapter
+        if (postedList.isEmpty()) {
+            tvEmpty.setVisibility(View.VISIBLE);
+            recyclerPosted.setVisibility(View.GONE);
+        } else {
+            tvEmpty.setVisibility(View.GONE);
+            recyclerPosted.setVisibility(View.VISIBLE);
+        }
     }
 }

@@ -52,6 +52,7 @@ public class InternshipAdapter extends RecyclerView.Adapter<InternshipAdapter.Vi
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView tvTitle, tvCompany, tvCreatedAt;
         private TextView tvLocation, tvDuration, tvField, tvStipend, tvDeadline;
+        private TextView tvStatus;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tvTitle);
@@ -62,6 +63,7 @@ public class InternshipAdapter extends RecyclerView.Adapter<InternshipAdapter.Vi
             tvField = itemView.findViewById(R.id.tvField);
             tvStipend = itemView.findViewById(R.id.tvStipend);
             tvDeadline = itemView.findViewById(R.id.tvDeadline);
+            tvStatus = itemView.findViewById(R.id.tvStatus);
         }
 
         public void bind(final Internship internship) {
@@ -73,6 +75,13 @@ public class InternshipAdapter extends RecyclerView.Adapter<InternshipAdapter.Vi
             tvField.setText(internship.getField());
             tvStipend.setText(internship.getStipend());
             tvDeadline.setText(internship.getDeadline());
+            if ("close".equalsIgnoreCase(internship.getStatus())) {
+                tvStatus.setText("Đã đóng");
+                tvStatus.setTextColor(itemView.getContext().getResources().getColor(R.color.red));
+            } else {
+                tvStatus.setText("Đang nhận hồ sơ");
+                tvStatus.setTextColor(itemView.getContext().getResources().getColor(R.color.colorPrimary));
+            }
 
 
             itemView.setOnClickListener(v -> {
@@ -86,6 +95,12 @@ public class InternshipAdapter extends RecyclerView.Adapter<InternshipAdapter.Vi
     // Cập nhật lại danh sách nếu cần
     public void setInternshipList(List<Internship> list) {
         this.internshipList = list;
+        notifyDataSetChanged();
+    }
+
+    public void updateList(List<Internship> newData) {
+        this.internshipList.clear();
+        this.internshipList.addAll(newData);
         notifyDataSetChanged();
     }
 }

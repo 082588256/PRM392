@@ -236,27 +236,15 @@
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnApply"
+                android:id="@+id/btnClose"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                android:text="APPLY NOW"
+                android:text="Dừng nhận hồ sơ"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 app:backgroundTint="@color/colorPrimary"
                 app:cornerRadius="8dp" />
         </LinearLayout>
     </ScrollView>
-
-    <!-- Biểu tượng tin nhắn ở góc dưới bên phải -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabMessage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:contentDescription="Message"
-        android:src="@drawable/ic_message"
-    app:backgroundTint="@color/colorPrimary"
-    app:tint="@color/white" />
 </FrameLayout>

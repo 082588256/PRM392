@@ -23,7 +23,9 @@ public class InternshipDAO {
     public static final String COLUMN_LATITUDE = "latitude";
     public static final String COLUMN_LONGITUDE = "longitude";
     public static final String COLUMN_CREATED_AT = "created_at";
+    public static final String COLUMN_STATUS = "status";
 
+    // Tạo bảng, bổ sung cột status mặc định là "open"
     public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + "("
             + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
             + COLUMN_TITLE + " TEXT NOT NULL,"
@@ -39,6 +41,7 @@ public class InternshipDAO {
             + COLUMN_LATITUDE + " REAL,"
             + COLUMN_LONGITUDE + " REAL,"
             + COLUMN_CREATED_AT + " DATETIME DEFAULT CURRENT_TIMESTAMP,"
+            + COLUMN_STATUS + " TEXT DEFAULT 'open',"
             + "FOREIGN KEY(" + COLUMN_RECRUITER_ID + ") REFERENCES " + UserDAO.TABLE_NAME + "(" + UserDAO.COLUMN_ID + ")"
             + ")";
 
@@ -62,7 +65,7 @@ public class InternshipDAO {
         values.put(COLUMN_RECRUITER_ID, internship.getRecruiterId());
         values.put(COLUMN_LATITUDE, internship.getLatitude());
         values.put(COLUMN_LONGITUDE, internship.getLongitude());
-
+        values.put(COLUMN_STATUS, internship.getStatus() != null ? internship.getStatus() : "open");
         return db.insert(TABLE_NAME, null, values);
     }
 
@@ -72,22 +75,7 @@ public class InternshipDAO {
                 null, null, null, null, null, COLUMN_CREATED_AT + " DESC");
 
         while (cursor.moveToNext()) {
-            Internship internship = new Internship();
-            internship.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-            internship.setTitle(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TITLE)));
-            internship.setCompany(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COMPANY)));
-            internship.setLocation(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LOCATION)));
-            internship.setDuration(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DURATION)));
-            internship.setField(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIELD)));
-            internship.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-            internship.setRequirements(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REQUIREMENTS)));
-            internship.setStipend(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STIPEND)));
-            internship.setDeadline(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DEADLINE)));
-            internship.setRecruiterId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_RECRUITER_ID)));
-            internship.setLatitude(cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LATITUDE)));
-            internship.setLongitude(cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LONGITUDE)));
-            internship.setCreatedAt(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CREATED_AT)));
-
+            Internship internship = getInternshipFromCursor(cursor);
             internships.add(internship);
         }
         cursor.close();
@@ -103,21 +91,7 @@ public class InternshipDAO {
                 null, null, null);
 
         if (cursor.moveToFirst()) {
-            internship = new Internship();
-            internship.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-            internship.setTitle(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TITLE)));
-            internship.setCompany(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COMPANY)));
-            internship.setLocation(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LOCATION)));
-            internship.setDuration(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DURATION)));
-            internship.setField(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIELD)));
-            internship.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-            internship.setRequirements(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REQUIREMENTS)));
-            internship.setStipend(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STIPEND)));
-            internship.setDeadline(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DEADLINE)));
-            internship.setRecruiterId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_RECRUITER_ID)));
-            internship.setLatitude(cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LATITUDE)));
-            internship.setLongitude(cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LONGITUDE)));
-            internship.setCreatedAt(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CREATED_AT)));
+            internship = getInternshipFromCursor(cursor);
         }
         cursor.close();
         return internship;
@@ -132,22 +106,7 @@ public class InternshipDAO {
                 null, null, COLUMN_CREATED_AT + " DESC");
 
         while (cursor.moveToNext()) {
-            Internship internship = new Internship();
-            internship.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
-            internship.setTitle(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TITLE)));
-            internship.setCompany(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COMPANY)));
-            internship.setLocation(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LOCATION)));
-            internship.setDuration(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DURATION)));
-            internship.setField(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIELD)));
-            internship.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
-            internship.setRequirements(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REQUIREMENTS)));
-            internship.setStipend(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STIPEND)));
-            internship.setDeadline(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DEADLINE)));
-            internship.setRecruiterId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_RECRUITER_ID)));
-            internship.setLatitude(cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LATITUDE)));
-            internship.setLongitude(cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LONGITUDE)));
-            internship.setCreatedAt(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CREATED_AT)));
-
+            Internship internship = getInternshipFromCursor(cursor);
             internships.add(internship);
         }
         cursor.close();
@@ -168,15 +127,43 @@ public class InternshipDAO {
         values.put(COLUMN_RECRUITER_ID, internship.getRecruiterId());
         values.put(COLUMN_LATITUDE, internship.getLatitude());
         values.put(COLUMN_LONGITUDE, internship.getLongitude());
-
+        values.put(COLUMN_STATUS, internship.getStatus());
         return db.update(TABLE_NAME, values,
                 COLUMN_ID + " = ?",
                 new String[]{String.valueOf(internship.getId())});
+    }
+
+    // Hàm update status
+    public int updateStatus(int internshipId, String status) {
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_STATUS, status);
+        return db.update(TABLE_NAME, values, COLUMN_ID + " = ?", new String[]{String.valueOf(internshipId)});
     }
 
     public int deleteInternship(int id) {
         return db.delete(TABLE_NAME,
                 COLUMN_ID + " = ?",
                 new String[]{String.valueOf(id)});
+    }
+
+    // Helper: lấy Internship từ cursor
+    private Internship getInternshipFromCursor(Cursor cursor) {
+        Internship internship = new Internship();
+        internship.setId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID)));
+        internship.setTitle(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TITLE)));
+        internship.setCompany(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COMPANY)));
+        internship.setLocation(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LOCATION)));
+        internship.setDuration(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DURATION)));
+        internship.setField(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FIELD)));
+        internship.setDescription(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION)));
+        internship.setRequirements(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_REQUIREMENTS)));
+        internship.setStipend(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STIPEND)));
+        internship.setDeadline(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DEADLINE)));
+        internship.setRecruiterId(cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_RECRUITER_ID)));
+        internship.setLatitude(cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LATITUDE)));
+        internship.setLongitude(cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LONGITUDE)));
+        internship.setCreatedAt(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_CREATED_AT)));
+        internship.setStatus(cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_STATUS)));
+        return internship;
     }
 }

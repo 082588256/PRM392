@@ -2,8 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingLeft="16dp"
-    android:paddingTop="50dp">
+    android:padding="16dp">
 
     <!-- Thanh top gồm nút logout -->
     <LinearLayout
@@ -52,6 +51,13 @@
         android:visibility="gone"
         android:paddingTop="32dp"
         android:paddingBottom="16dp" />
+
+    <Button
+        android:id="@+id/btnAddInternship"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add new internship"
+        android:layout_margin="12dp"/>
 
     <!-- Danh sách thực tập -->
     <androidx.recyclerview.widget.RecyclerView

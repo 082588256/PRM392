@@ -2,8 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Quyền sử dụng internet, mạng và vị trí -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -19,53 +22,39 @@
             android:name=".activity.auth.LoginActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustPan">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".activity.auth.SignupActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan" />
 
         <!-- Student Activities -->
-        <activity
-            android:name=".activity.student.InternshipListActivity"
-            android:exported="false" />
+        <activity android:name=".activity.student.InternshipListActivity" android:exported="false" />
+        <activity android:name=".activity.student.InternshipDetailActivity" android:exported="false" />
+        <activity android:name=".activity.student.ApplyActivity" android:exported="false" />
+        <activity android:name=".activity.student.AppliedJobsActivity" android:exported="false" />
+        <activity android:name=".activity.student.ChatActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
 
-        <activity
-            android:name=".activity.student.InternshipDetailActivity"
-            android:exported="false" />
+        <!-- Recruiter Activities -->
+        <activity android:name=".activity.recruiter.PostedInternshipsActivity" android:exported="false" />
+        <activity android:name=".activity.recruiter.HistoryActivity" android:exported="false" />
+        <activity android:name=".activity.recruiter.AddInternshipActivity" android:exported="false" />
+        <activity android:name=".activity.recruiter.RecruiterInternshipDetailActivity" android:exported="false"/>
 
-        <activity
-            android:name=".activity.student.ApplyActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".activity.student.AppliedJobsActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".activity.recruiter.PostedInternshipsActivity"
-            android:exported="false" />
-
+        <!-- Google Maps API Key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyA7Vg7jARLrEYa1UVWITpLTO-YL5CJ8x9M"/>
 
-        <activity android:name=".activity.common.MapActivity" />
+        <!-- Map hiển thị chi tiết vị trí internship -->
+        <activity android:name=".activity.common.MapActivity"/>
 
-        <activity
-            android:name=".activity.student.ChatActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
+        <!-- Activity chọn vị trí trên bản đồ (dùng cho thêm Internship mới) -->
+        <activity android:name=".activity.common.PickLocationMapActivity" android:exported="false" />
 
-        <activity
-            android:name=".activity.recruiter.HistoryActivity"
-            android:exported="false" />
     </application>
-
 </manifest>

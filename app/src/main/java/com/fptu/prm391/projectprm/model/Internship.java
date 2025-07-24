@@ -17,13 +17,14 @@ public class Internship implements Serializable {
     private String createdAt;
     private double latitude;
     private double longitude;
+    private String status; // Thêm trường này
 
     public Internship() {}
 
     public Internship(String title, String company, String location, String duration,
                       String field, String description, String requirements,
                       String stipend, String deadline, int recruiterId,
-                      double latitude, double longitude) {
+                      double latitude, double longitude, String status) {
         this.title = title;
         this.company = company;
         this.location = location;
@@ -36,7 +37,10 @@ public class Internship implements Serializable {
         this.recruiterId = recruiterId;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.status = status;
     }
+
+    // Nếu các chỗ khác vẫn dùng constructor cũ thì giữ lại, nhưng các chỗ insert mới nên chuyển qua constructor mới
 
     // Getters & Setters
     public int getId() { return id; }
@@ -80,4 +84,7 @@ public class Internship implements Serializable {
 
     public double getLongitude() { return longitude; }
     public void setLongitude(double longitude) { this.longitude = longitude; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 }
