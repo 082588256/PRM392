@@ -93,8 +93,7 @@ public class AddInternshipActivity extends AppCompatActivity {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         selectedLatitude = result.getData().getDoubleExtra("LATITUDE", 0);
                         selectedLongitude = result.getData().getDoubleExtra("LONGITUDE", 0);
-                        tvLatLng.setText("Lat: " + selectedLatitude + ", Lng: " + selectedLongitude);
-                    }
+                        tvLatLng.setText("Lat: " + selectedLatitude + "\nLng: " + selectedLongitude);                    }
                 }
         );
 
@@ -120,7 +119,7 @@ public class AddInternshipActivity extends AppCompatActivity {
                         if (location != null) {
                             selectedLatitude = location.getLatitude();
                             selectedLongitude = location.getLongitude();
-                            tvLatLng.setText("Lat: " + selectedLatitude + ", Lng: " + selectedLongitude);
+                            tvLatLng.setText("Lat: " + selectedLatitude + "\nLng: " + selectedLongitude);
                         } else {
                             requestNewLocationData();
                         }
