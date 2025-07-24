@@ -51,16 +51,17 @@ public class PickLocationMapActivity extends AppCompatActivity implements OnMapR
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLatLng, 6f));
     }
 
-//    @Override
-//    public void onBackPressed() {
-//        if (selectedLatLng != null) {
-//            Intent data = new Intent();
-//            data.putExtra("LATITUDE", selectedLatLng.latitude);
-//            data.putExtra("LONGITUDE", selectedLatLng.longitude);
-//            setResult(RESULT_OK, data);
-//            finish();
-//        } else {
-//            Toast.makeText(this, "Vui lòng chọn vị trí trên bản đồ!", Toast.LENGTH_SHORT).show();
-//        }
-//    }
+    @Override
+    public void onBackPressed() {
+        if (selectedLatLng != null) {
+            Intent data = new Intent();
+            data.putExtra("LATITUDE", selectedLatLng.latitude);
+            data.putExtra("LONGITUDE", selectedLatLng.longitude);
+            setResult(RESULT_OK, data);
+            finish();
+        } else {
+            Toast.makeText(this, "Vui lòng chọn vị trí trên bản đồ!", Toast.LENGTH_SHORT).show();
+            super.onBackPressed();
+        }
+    }
 }

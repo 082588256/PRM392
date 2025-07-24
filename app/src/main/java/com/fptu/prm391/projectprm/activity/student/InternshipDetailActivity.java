@@ -2,6 +2,7 @@ package com.fptu.prm391.projectprm.activity.student;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +22,8 @@ import com.fptu.prm391.projectprm.model.Internship;
 import com.fptu.prm391.projectprm.util.SharedPrefManager;
 
 public class InternshipDetailActivity extends AppCompatActivity {
+
+    private static final String TAG = "InternshipDetailActivity";
 
     private TextView tvTitle, tvCompany, tvLocation, tvDuration,
             tvStipend, tvDeadline, tvDescription, tvRequirements;
@@ -50,8 +53,10 @@ public class InternshipDetailActivity extends AppCompatActivity {
         }
 
         internshipId = getIntent().getIntExtra("INTERNSHIP_ID", -1);
+        Log.d(TAG, "Received internshipId: " + internshipId);
         if (internshipId == -1) {
             Toast.makeText(this, "Invalid Internship ID", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "Invalid Internship ID received in Intent");
             finish();
             return;
         }
@@ -71,6 +76,7 @@ public class InternshipDetailActivity extends AppCompatActivity {
 
         // Lấy studentId từ SharedPrefManager
         studentId = SharedPrefManager.getInstance(this).getUser().getId();
+        Log.d(TAG, "Current studentId: " + studentId);
 
         // Database, giữ reference để dùng trong onResume
         dbHelper = new DatabaseHelper(this);
@@ -83,6 +89,7 @@ public class InternshipDetailActivity extends AppCompatActivity {
                 result -> {
                     if (result.getResultCode() == RESULT_OK) {
                         // Sau khi Apply xong, cập nhật trạng thái nút ngay lập tức
+                        Log.d(TAG, "ApplyActivity returned RESULT_OK. Update apply button.");
                         updateApplyButton();
                     }
                 }
@@ -93,20 +100,31 @@ public class InternshipDetailActivity extends AppCompatActivity {
 
         // Xử lý nút bản đồ
         btnMap.setOnClickListener(v -> {
-            if (internship == null) return;
+            if (internship == null) {
+                Log.e(TAG, "Internship is null when clicking btnMap");
+                return;
+            }
+            Log.d(TAG, "Map button clicked. Lat: " + internship.getLatitude() + ", Lng: " + internship.getLongitude());
             Intent intent = new Intent(InternshipDetailActivity.this,
                     com.fptu.prm391.projectprm.activity.common.MapActivity.class);
             intent.putExtra("LATITUDE", internship.getLatitude());
             intent.putExtra("LONGITUDE", internship.getLongitude());
             intent.putExtra("LOCATION_NAME", internship.getLocation());
+            Log.d(TAG, "Sending intent to MapActivity with LATITUDE: " + internship.getLatitude()
+                    + ", LONGITUDE: " + internship.getLongitude()
+                    + ", LOCATION_NAME: " + internship.getLocation());
             startActivity(intent);
         });
 
         // Xử lý nút chat
         fabMessage.setOnClickListener(v -> {
-            if (internship == null) return;
+            if (internship == null) {
+                Log.e(TAG, "Internship is null when clicking fabMessage");
+                return;
+            }
             int recruiterId = internship.getRecruiterId();
             String recruiterName = internship.getCompany();
+            Log.d(TAG, "Chat button clicked. RecruiterId: " + recruiterId + ", RecruiterName: " + recruiterName);
 
             Intent intent = new Intent(InternshipDetailActivity.this, ChatActivity.class);
             intent.putExtra("SENDER_ID", studentId);
@@ -118,8 +136,10 @@ public class InternshipDetailActivity extends AppCompatActivity {
 
     private void loadAndBindInternship() {
         internship = internshipDAO.getInternshipById(internshipId);
+        Log.d(TAG, "Loaded internship: " + (internship != null ? internship.toString() : "null"));
         if (internship == null) {
             Toast.makeText(this, "Internship not found", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "No internship found for id: " + internshipId);
             finish();
             return;
         }
@@ -129,16 +149,21 @@ public class InternshipDetailActivity extends AppCompatActivity {
 
     // Cập nhật trạng thái nút Apply dựa theo internship status và application
     private void updateApplyButton() {
-        if (internship == null) return;
+        if (internship == null) {
+            Log.e(TAG, "updateApplyButton: internship is null");
+            return;
+        }
         // Refresh lại status phòng trường hợp recruiter vừa đóng/mở internship
         internship = internshipDAO.getInternshipById(internshipId);
 
+        Log.d(TAG, "updateApplyButton: internship status: " + internship.getStatus());
         if ("close".equalsIgnoreCase(internship.getStatus())) {
             btnApply.setText("Đã dừng nhận hồ sơ");
             btnApply.setEnabled(false);
             btnApply.setOnClickListener(null);
         } else {
             boolean hasApplied = applicationDAO.hasApplied(studentId, internshipId);
+            Log.d(TAG, "updateApplyButton: hasApplied = " + hasApplied);
             if (hasApplied) {
                 btnApply.setText("Already Applied");
                 btnApply.setEnabled(false);
@@ -147,6 +172,7 @@ public class InternshipDetailActivity extends AppCompatActivity {
                 btnApply.setText("Apply Now");
                 btnApply.setEnabled(true);
                 btnApply.setOnClickListener(v -> {
+                    Log.d(TAG, "Apply button clicked. Launching ApplyActivity.");
                     Intent intent = new Intent(InternshipDetailActivity.this, ApplyActivity.class);
                     intent.putExtra("INTERNSHIP_ID", internshipId);
                     applyLauncher.launch(intent);
@@ -156,6 +182,7 @@ public class InternshipDetailActivity extends AppCompatActivity {
     }
 
     private void bindInternshipData(Internship internship) {
+        Log.d(TAG, "Binding internship data to UI: " + internship.toString());
         tvTitle.setText(internship.getTitle());
         tvCompany.setText(internship.getCompany());
         tvLocation.setText(internship.getLocation());
@@ -170,6 +197,7 @@ public class InternshipDetailActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(TAG, "onResume called");
         loadAndBindInternship();
     }
 }
