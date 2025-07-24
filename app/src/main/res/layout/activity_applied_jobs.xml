@@ -2,8 +2,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="60dp"
-    android:paddingLeft="16dp"
+    android:padding="16dp"
     android:paddingStart="16dp"
     android:paddingEnd="16dp"
     android:background="#FFFFFF">
@@ -39,7 +38,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Việc đã lưu"
+            android:text="Lịch hẹn"
             android:textSize="14sp"
             android:textStyle="bold"
             android:textColor="@color/gray"

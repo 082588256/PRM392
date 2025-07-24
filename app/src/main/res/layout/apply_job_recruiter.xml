@@ -28,7 +28,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Pending approval list"
+                android:text="Danh sách chờ duyệt"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="@color/black"
@@ -54,7 +54,7 @@
                 android:minHeight="48dp"
                 android:paddingHorizontal="8dp"
                 android:paddingVertical="12dp"
-                android:text="Interview proposal"
+                android:text="Đề xuất thời gian phỏng vấn"
                 android:textColor="@color/gray"
                 android:textSize="14sp"
                 android:textStyle="bold" />
