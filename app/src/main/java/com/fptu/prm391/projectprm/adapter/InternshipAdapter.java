@@ -11,19 +11,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.fptu.prm391.projectprm.R;
 import com.fptu.prm391.projectprm.model.Internship;
 
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class InternshipAdapter extends RecyclerView.Adapter<InternshipAdapter.ViewHolder> {
 
     private List<Internship> internshipList;
     private OnItemClickListener listener;
 
-    // Interface cho sự kiện click
     public interface OnItemClickListener {
         void onItemClick(Internship internship);
     }
 
-    // Constructor
     public InternshipAdapter(List<Internship> internshipList, OnItemClickListener listener) {
         this.internshipList = internshipList;
         this.listener = listener;
@@ -48,11 +48,11 @@ public class InternshipAdapter extends RecyclerView.Adapter<InternshipAdapter.Vi
         return internshipList != null ? internshipList.size() : 0;
     }
 
-    // ViewHolder class
     public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView tvTitle, tvCompany, tvCreatedAt;
         private TextView tvLocation, tvDuration, tvField, tvStipend, tvDeadline;
         private TextView tvStatus;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tvTitle);
@@ -73,8 +73,32 @@ public class InternshipAdapter extends RecyclerView.Adapter<InternshipAdapter.Vi
             tvLocation.setText(internship.getLocation());
             tvDuration.setText(internship.getDuration());
             tvField.setText(internship.getField());
-            tvStipend.setText(internship.getStipend());
             tvDeadline.setText(internship.getDeadline());
+
+            // Format stipend
+            String stipendRaw = internship.getStipend(); // dạng "1111111|VND"
+            String stipendText = stipendRaw;
+            if (stipendRaw != null && stipendRaw.contains("|")) {
+                String[] parts = stipendRaw.split("\\|");
+                try {
+                    long amount = Long.parseLong(parts[0]);
+                    String currency = parts[1];
+                    NumberFormat nf;
+                    if ("VND".equals(currency)) {
+                        nf = NumberFormat.getInstance(new Locale("vi", "VN"));
+                        stipendText = nf.format(amount) + " VND";
+                    } else if ("USD".equals(currency)) {
+                        nf = NumberFormat.getInstance(Locale.US);
+                        stipendText = nf.format(amount) + " USD";
+                    } else {
+                        stipendText = stipendRaw;
+                    }
+                } catch (Exception e) {
+                    stipendText = stipendRaw;
+                }
+            }
+            tvStipend.setText(stipendText);
+
             if ("close".equalsIgnoreCase(internship.getStatus())) {
                 tvStatus.setText("Đã đóng");
                 tvStatus.setTextColor(itemView.getContext().getResources().getColor(R.color.red));
@@ -82,7 +106,6 @@ public class InternshipAdapter extends RecyclerView.Adapter<InternshipAdapter.Vi
                 tvStatus.setText("Đang nhận hồ sơ");
                 tvStatus.setTextColor(itemView.getContext().getResources().getColor(R.color.colorPrimary));
             }
-
 
             itemView.setOnClickListener(v -> {
                 if (listener != null) {
@@ -92,7 +115,6 @@ public class InternshipAdapter extends RecyclerView.Adapter<InternshipAdapter.Vi
         }
     }
 
-    // Cập nhật lại danh sách nếu cần
     public void setInternshipList(List<Internship> list) {
         this.internshipList = list;
         notifyDataSetChanged();

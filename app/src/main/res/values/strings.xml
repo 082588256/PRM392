@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Project PRM</string>
+
+    <string-array name="money">
+        <item>VND</item>
+        <item>USD</item>
+    </string-array>
 </resources>
