@@ -97,7 +97,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_marginTop="8dp"
-        android:text="Withdraw Application"
+        android:text="Rút đơn"
         android:enabled="true" />
 
 

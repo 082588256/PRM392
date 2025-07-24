@@ -41,13 +41,14 @@
         <activity android:name=".activity.student.InternshipDetailActivity" android:exported="false" />
         <activity android:name=".activity.student.ApplyActivity" android:exported="false" />
         <activity android:name=".activity.student.AppliedJobsActivity" android:exported="false" />
-        <activity android:name=".activity.student.ChatActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".activity.common.ChatActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
 
         <!-- Recruiter Activities -->
         <activity android:name=".activity.recruiter.PostedInternshipsActivity" android:exported="false" />
         <activity android:name=".activity.recruiter.HistoryActivity" android:exported="false" />
         <activity android:name=".activity.recruiter.AddInternshipActivity" android:exported="false" />
         <activity android:name=".activity.recruiter.RecruiterInternshipDetailActivity" android:exported="false"/>
+        <activity android:name=".activity.recruiter.RecruiterChatsActivity" android:exported="false"/>
 
         <!-- Google Maps API Key -->
         <meta-data

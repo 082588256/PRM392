@@ -1,4 +1,4 @@
-package com.fptu.prm391.projectprm.activity.student;
+package com.fptu.prm391.projectprm.activity.common;
 
 import android.os.Bundle;
 import android.os.Handler;

@@ -60,6 +60,12 @@ public class PostedInternshipsActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        ImageButton btnMessages = findViewById(R.id.btnMessages);
+        btnMessages.setOnClickListener(v -> {
+            Intent intent = new Intent(this, RecruiterChatsActivity.class);
+            startActivity(intent);
+        });
+
         // Đăng xuất
         ImageButton btnLogout = findViewById(R.id.btnLogout);
         btnLogout.setOnClickListener(v -> {

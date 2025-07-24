@@ -7,13 +7,16 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -36,6 +39,7 @@ import java.util.Locale;
 
 public class AddInternshipActivity extends AppCompatActivity {
     private EditText etTitle, etCompany, etLocation, etDuration, etField, etDescription, etRequirements, etStipend, etDeadline;
+    private Spinner spinnerCurrency;
     private Button btnPickLocation, btnGetCurrentLocation, btnSubmit;
     private TextView tvLatLng;
     private InternshipDAO internshipDAO;
@@ -63,6 +67,12 @@ public class AddInternshipActivity extends AppCompatActivity {
         etStipend = findViewById(R.id.etStipend);
         etDeadline = findViewById(R.id.etDeadline);
 
+        spinnerCurrency = findViewById(R.id.spinnerCurrency);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                this, R.array.money, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCurrency.setAdapter(adapter);
+
         btnPickLocation = findViewById(R.id.btnPickLocation);
         btnGetCurrentLocation = findViewById(R.id.btnGetCurrentLocation);
         btnSubmit = findViewById(R.id.btnSubmit);
@@ -72,22 +82,18 @@ public class AddInternshipActivity extends AppCompatActivity {
         internshipDAO = new InternshipDAO(dbHelper.getWritableDatabase());
         recruiterId = SharedPrefManager.getInstance(this).getUser().getId();
 
-        // DatePicker cho deadline
         etDeadline.setFocusable(false);
         etDeadline.setOnClickListener(v -> showDatePicker());
 
-        // FusedLocationProviderClient để lấy vị trí hiện tại
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        // Đăng ký nhận kết quả chọn map
         pickLocationLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         selectedLatitude = result.getData().getDoubleExtra("LATITUDE", 0);
                         selectedLongitude = result.getData().getDoubleExtra("LONGITUDE", 0);
-                        tvLatLng.setText("Lat: " + selectedLatitude + ", Lng: " + selectedLongitude);
-                    }
+                        tvLatLng.setText("Lat: " + selectedLatitude + "\nLng: " + selectedLongitude);                    }
                 }
         );
 
@@ -113,7 +119,7 @@ public class AddInternshipActivity extends AppCompatActivity {
                         if (location != null) {
                             selectedLatitude = location.getLatitude();
                             selectedLongitude = location.getLongitude();
-                            tvLatLng.setText("Lat: " + selectedLatitude + ", Lng: " + selectedLongitude);
+                            tvLatLng.setText("Lat: " + selectedLatitude + "\nLng: " + selectedLongitude);
                         } else {
                             requestNewLocationData();
                         }
@@ -226,6 +232,11 @@ public class AddInternshipActivity extends AppCompatActivity {
             Toast.makeText(this, "Vui lòng chọn vị trí trên bản đồ hoặc lấy vị trí hiện tại!", Toast.LENGTH_SHORT).show();
             return false;
         }
+        if (etStipend.getText().toString().trim().isEmpty()) {
+            etStipend.setError("Vui lòng nhập lương/phụ cấp");
+            etStipend.requestFocus();
+            return false;
+        }
         return true;
     }
 
@@ -269,9 +280,11 @@ public class AddInternshipActivity extends AppCompatActivity {
         String description = etDescription.getText().toString().trim();
         String requirements = etRequirements.getText().toString().trim();
         String stipend = etStipend.getText().toString().trim();
+        String currency = spinnerCurrency.getSelectedItem().toString();
+        String stipendRaw = stipend + "|" + currency; // Lưu vào DB ghép số và đơn vị tiền tệ
         String deadline = etDeadline.getText().toString().trim();
 
-        Internship internship = new Internship(title, company, location, duration, field, description, requirements, stipend, deadline, recruiterId, selectedLatitude, selectedLongitude, "open");
+        Internship internship = new Internship(title, company, location, duration, field, description, requirements, stipendRaw, deadline, recruiterId, selectedLatitude, selectedLongitude, "open");
 
         long result = internshipDAO.insertInternship(internship);
 
