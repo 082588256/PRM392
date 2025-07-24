@@ -52,7 +52,7 @@
         <!-- Google Maps API Key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBwkTdz0-Zwbe4yOHYKzGG40Kf0isYp20w"/>
+            android:value="${API_KEY}"/>
 
         <!-- Map hiển thị chi tiết vị trí internship -->
         <activity android:name=".activity.common.MapActivity"/>

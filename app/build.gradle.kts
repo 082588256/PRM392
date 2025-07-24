@@ -12,8 +12,12 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders["API_KEY"] = if (project.hasProperty("API_KEY")) {
+            project.property("API_KEY") as String
+        } else {
+            ""
+        }
     }
 
     buildTypes {
