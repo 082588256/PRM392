@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -93,7 +94,9 @@ public class AddInternshipActivity extends AppCompatActivity {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         selectedLatitude = result.getData().getDoubleExtra("LATITUDE", 0);
                         selectedLongitude = result.getData().getDoubleExtra("LONGITUDE", 0);
-                        tvLatLng.setText("Lat: " + selectedLatitude + "\nLng: " + selectedLongitude);                    }
+                        Log.d("AddInternshipActivity", "Received picked location: Lat: " + selectedLatitude + ", Lng: " + selectedLongitude);
+                        tvLatLng.setText("Lat: " + selectedLatitude + "\nLng: " + selectedLongitude);
+                    }
                 }
         );
 
@@ -285,7 +288,7 @@ public class AddInternshipActivity extends AppCompatActivity {
         String deadline = etDeadline.getText().toString().trim();
 
         Internship internship = new Internship(title, company, location, duration, field, description, requirements, stipendRaw, deadline, recruiterId, selectedLatitude, selectedLongitude, "open");
-
+        Log.d("AddInternshipActivity", "Submitting internship with lat: " + selectedLatitude + ", lng: " + selectedLongitude);
         long result = internshipDAO.insertInternship(internship);
 
         if (result != -1) {

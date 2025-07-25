@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -48,8 +49,10 @@ public class PickLocationMapActivity extends AppCompatActivity implements OnMapR
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        Log.d("PickLocationMapActivity", "onMapReady called.");
         mMap = googleMap;
         mMap.setOnMapClickListener(latLng -> {
+            Log.d("PickLocationMapActivity", "Map clicked at: " + latLng.latitude + ", " + latLng.longitude);
             if (marker != null) marker.remove();
             marker = mMap.addMarker(new com.google.android.gms.maps.model.MarkerOptions()
                     .position(latLng)
@@ -63,33 +66,35 @@ public class PickLocationMapActivity extends AppCompatActivity implements OnMapR
                 fusedLocationProviderClient.getLastLocation()
                         .addOnSuccessListener(this, location -> {
                             if (location != null) {
+                                Log.d("PickLocationMapActivity", "Current location: " + location.getLatitude() + ", " + location.getLongitude());
                                 LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f));
                             } else {
-                                // Không lấy được location, fallback về Việt Nam
+                                Log.d("PickLocationMapActivity", "Location null, fallback to Vietnam.");
                                 LatLng defaultLatLng = new LatLng(21.028511, 105.804817);
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLatLng, 6f));
                             }
                         })
                         .addOnFailureListener(e -> {
+                            Log.e("PickLocationMapActivity", "Failed to get location: " + e.getMessage());
                             LatLng defaultLatLng = new LatLng(21.028511, 105.804817);
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLatLng, 6f));
                         });
             } else {
-                // Xin quyền nếu chưa có
+                Log.d("PickLocationMapActivity", "Requesting location permission.");
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                         LOCATION_PERMISSION_REQUEST_CODE);
-                // Zoom tạm về Việt Nam
                 LatLng defaultLatLng = new LatLng(21.028511, 105.804817);
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLatLng, 6f));
             }
         } catch (SecurityException e) {
-            // Bị lỗi quyền, fallback về Việt Nam
+            Log.e("PickLocationMapActivity", "SecurityException: " + e.getMessage());
             LatLng defaultLatLng = new LatLng(21.028511, 105.804817);
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLatLng, 6f));
         }
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -121,10 +126,12 @@ public class PickLocationMapActivity extends AppCompatActivity implements OnMapR
 
     @Override
     public void onBackPressed() {
+        Log.d("PickLocationMapActivity", "onBackPressed called. selectedLatLng: " + selectedLatLng);
         if (selectedLatLng != null) {
             Intent data = new Intent();
             data.putExtra("LATITUDE", selectedLatLng.latitude);
             data.putExtra("LONGITUDE", selectedLatLng.longitude);
+            Log.d("PickLocationMapActivity", "Returning selected location: " + selectedLatLng.latitude + ", " + selectedLatLng.longitude);
             setResult(RESULT_OK, data);
             finish();
         } else {

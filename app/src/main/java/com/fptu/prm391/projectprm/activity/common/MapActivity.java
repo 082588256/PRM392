@@ -1,6 +1,10 @@
 package com.fptu.prm391.projectprm.activity.common;
 
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.fptu.prm391.projectprm.R;
@@ -21,6 +25,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+        // Đoạn kiểm tra API Key runtime
+        try {
+            ApplicationInfo ai = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
+            String apiKey = ai.metaData.getString("com.google.android.geo.API_KEY");
+            Log.d("GoogleMap", "API Key at runtime: " + apiKey);
+        } catch (Exception e) {
+            Log.e("GoogleMap", "Error getting API Key: " + e.getMessage());
+        }
+
         if (getSupportActionBar() != null) {
             getSupportActionBar().hide();
         }
@@ -38,6 +52,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        Log.d("MapActivity", "onMapReady called. Lat: " + latitude + ", Lng: " + longitude + ", LocationName: " + locationName);
         LatLng internshipLocation = new LatLng(latitude, longitude);
         googleMap.addMarker(new MarkerOptions()
                 .position(internshipLocation)
