@@ -40,6 +40,13 @@
             android:layout_height="36dp"
             android:src="@drawable/ic_history"
             android:layout_marginEnd="8dp"/>
+        <ImageButton
+            android:id="@+id/btnNoti"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_noti"
+            android:background="@android:color/transparent"
+            android:scaleType="centerInside"/>
 
         <ImageButton
             android:id="@+id/btnLogout"
@@ -48,6 +55,7 @@
             android:src="@drawable/ic_logout"
             android:background="@android:color/transparent"
             android:scaleType="centerInside"/>
+
     </LinearLayout>
 
     <!-- Text thông báo rỗng -->

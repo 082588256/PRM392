@@ -17,6 +17,7 @@ import com.fptu.prm391.projectprm.adapter.ScheduleAdapter;
 import com.fptu.prm391.projectprm.db.ApplicationDAO;
 import com.fptu.prm391.projectprm.db.DatabaseHelper;
 import com.fptu.prm391.projectprm.db.InterviewDAO;
+import com.fptu.prm391.projectprm.db.NotificationDAO;
 import com.fptu.prm391.projectprm.model.Application;
 import com.fptu.prm391.projectprm.model.Interview;
 import com.fptu.prm391.projectprm.util.SharedPrefManager;
@@ -38,6 +39,8 @@ public class HistoryActivity extends AppCompatActivity {
     private List<Application> scheduleList;
 
     private ApplicationDAO applicationDAO;
+    private NotificationDAO notificationDAO;
+
     private int recruiterId;
     private boolean isAppliedTab = true;
 
@@ -52,6 +55,8 @@ public class HistoryActivity extends AppCompatActivity {
         // Khởi tạo DB + DAO
         DatabaseHelper dbHelper = new DatabaseHelper(this);
         applicationDAO = new ApplicationDAO(dbHelper.getWritableDatabase());
+        notificationDAO = new NotificationDAO(dbHelper.getWritableDatabase());
+
 
         // Thông báo số lượng đơn ứng tuyển
         int totalApplications = applicationDAO.countApplicationsByRecruiter(recruiterId);
@@ -73,8 +78,15 @@ public class HistoryActivity extends AppCompatActivity {
         applicationList = new ArrayList<>();
         scheduleList = new ArrayList<>();
 
-        applicationAdapter = new ApplicationAdapter(applicationList, null, true);
+        // Truyền đủ tham số cho ApplicationAdapter mới
+        applicationAdapter = new ApplicationAdapter(
+                this, applicationList, true, applicationDAO, notificationDAO
+        );
         scheduleAdapter = new ScheduleAdapter(scheduleList);
+
+
+//        applicationAdapter = new ApplicationAdapter(applicationList, null, true);
+//        scheduleAdapter = new ScheduleAdapter(scheduleList);
 
         applicationAdapter.setOnConfirmClickListener((application, position, newStatus) -> {
             int rowsUpdated = applicationDAO.updateApplicationStatus(application.getId(), newStatus);
@@ -111,7 +123,8 @@ public class HistoryActivity extends AppCompatActivity {
 
                 if (interviewId > 0 && newTime != null && !newTime.isEmpty()) {
                     String notes = application.getInterviewNotes(); // <- Lấy notes từ object
-                    boolean updated = interviewDAO.updateInterview(interviewId, newTime, notes);                    if (!updated) {
+                    boolean updated = interviewDAO.updateInterview(interviewId, newTime, notes);
+                    if (!updated) {
                         allSuccess = false;
                         Log.e("HistoryActivity", "Không thể cập nhật lịch hẹn cho interviewId: " + interviewId);
                     } else {
@@ -140,12 +153,16 @@ public class HistoryActivity extends AppCompatActivity {
             tvScheduleTab.setBackgroundResource(R.drawable.tab_unselected_bg);
             tvScheduleTab.setTextColor(getResources().getColor(R.color.gray));
             btnSaveSchedules.setVisibility(View.GONE);
+            recyclerRecruiterJobs.setAdapter(applicationAdapter);
+
         } else {
             tvScheduleTab.setBackgroundResource(R.drawable.tab_selected_bg);
             tvScheduleTab.setTextColor(getResources().getColor(R.color.black));
             tvAppliedTab.setBackgroundResource(R.drawable.tab_unselected_bg);
             tvAppliedTab.setTextColor(getResources().getColor(R.color.gray));
             btnSaveSchedules.setVisibility(View.VISIBLE);
+            recyclerRecruiterJobs.setAdapter(scheduleAdapter);
+
         }
     }
 
@@ -162,7 +179,7 @@ public class HistoryActivity extends AppCompatActivity {
             tvEmptyRecruiterMessage.setVisibility(View.GONE);
             recyclerRecruiterJobs.setVisibility(View.VISIBLE);
         }
-
+        applicationAdapter.setData(applicationList);
         recyclerRecruiterJobs.setAdapter(applicationAdapter);
         applicationAdapter.updateApplications(applicationList);
     }

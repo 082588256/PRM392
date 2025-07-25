@@ -25,6 +25,7 @@ import com.fptu.prm391.projectprm.R;
 import com.fptu.prm391.projectprm.db.ApplicationDAO;
 import com.fptu.prm391.projectprm.db.DatabaseHelper;
 import com.fptu.prm391.projectprm.db.InterviewDAO;
+import com.fptu.prm391.projectprm.db.NotificationDAO;
 import com.fptu.prm391.projectprm.model.Application;
 import com.fptu.prm391.projectprm.model.Interview;
 import com.fptu.prm391.projectprm.util.SharedPrefManager;
@@ -93,6 +94,8 @@ public class ApplyActivity extends AppCompatActivity {
 
             SQLiteDatabase db = new DatabaseHelper(this).getWritableDatabase();
             ApplicationDAO dao = new ApplicationDAO(db);
+            InterviewDAO interviewDAO = new InterviewDAO(db);
+            NotificationDAO notificationDAO = new NotificationDAO(db);
 
             Application app = new Application();
             app.setStudentId(studentId);
@@ -100,6 +103,7 @@ public class ApplyActivity extends AppCompatActivity {
             app.setResumeFile(selectedCVUri.toString());
             app.setCoverLetter(coverLetter);
             app.setNote("");
+            app.setStatus("Pending");
 
             long result = dao.insertApplication(app);
             if (result != -1) {
@@ -109,15 +113,21 @@ public class ApplyActivity extends AppCompatActivity {
                 interview.setStatus("Proposed");
                 interview.setNotes("Chưa có");
 
-                InterviewDAO interviewDAO = new InterviewDAO(db);
                 long interviewResult = interviewDAO.insertInterview(interview);
 
-                if (interviewResult == -1) {
+                if (interviewResult != -1) {
+                    notificationDAO.insertNotification("Bạn đã nộp đơn ứng tuyển thành công.", studentId);
+
+                    int recruiterId = dao.getRecruiterIdByApplicationId((int) result);
+                    if (recruiterId != -1) {
+                        notificationDAO.insertNotification("Bạn vừa nhận được một đơn ứng tuyển mới.", recruiterId);
+                    }
+
+                    Toast.makeText(this, "Nộp đơn thành công!", Toast.LENGTH_SHORT).show();
+                    finish();
+                } else {
                     Toast.makeText(this, "Lỗi khi tạo lịch phỏng vấn!", Toast.LENGTH_SHORT).show();
                 }
-
-                Toast.makeText(this, "Nộp đơn thành công!", Toast.LENGTH_SHORT).show();
-                finish();
             } else {
                 Toast.makeText(this, "Lỗi khi nộp đơn!", Toast.LENGTH_SHORT).show();
             }
@@ -200,12 +210,9 @@ public class ApplyActivity extends AppCompatActivity {
                 }
             }
         }
-        if (result == null) {
-            result = uri.getPath();
-            int cut = result.lastIndexOf('/');
-            if (cut != -1) {
-                result = result.substring(cut + 1);
-            }
+        if (result == null && uri.getPath() != null) {
+            int cut = uri.getPath().lastIndexOf('/');
+            if (cut != -1) result = uri.getPath().substring(cut + 1);
         }
         return result;
     }

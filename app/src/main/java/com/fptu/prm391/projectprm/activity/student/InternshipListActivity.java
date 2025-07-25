@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.fptu.prm391.projectprm.R;
 import com.fptu.prm391.projectprm.activity.auth.LoginActivity;
+import com.fptu.prm391.projectprm.activity.common.NotificationActivity;
 import com.fptu.prm391.projectprm.adapter.InternshipAdapter;
 import com.fptu.prm391.projectprm.db.DatabaseHelper;
 import com.fptu.prm391.projectprm.db.InternshipDAO;
@@ -65,6 +66,15 @@ public class InternshipListActivity extends AppCompatActivity implements Interns
             Intent intent = new Intent(this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
+        });
+
+        ImageButton btnNoti = findViewById(R.id.btnNoti);
+        btnNoti.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(InternshipListActivity.this, NotificationActivity.class);
+                startActivity(intent);
+            }
         });
 
         FloatingActionButton btnViewApplications = findViewById(R.id.btnViewApplications);

@@ -88,6 +88,19 @@ public class ApplicationDAO {
         Log.d("ApplicationDAO", "Fetched " + applications.size() + " applications for studentId " + studentId);
         return applications;
     }
+    public int getRecruiterIdByApplicationId(int applicationId) {
+        int recruiterId = -1;
+        String query = "SELECT i.recruiter_id " +
+                "FROM internships i " +
+                "JOIN applications a ON a.internship_id = i.id " +
+                "WHERE a.id = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(applicationId)});
+        if (cursor.moveToFirst()) {
+            recruiterId = cursor.getInt(0);
+        }
+        cursor.close();
+        return recruiterId;
+    }
     public int countApplicationsByRecruiter(int recruiterId) {
         int total = 0;
         String query = "SELECT COUNT(a.id) AS total_applications " +

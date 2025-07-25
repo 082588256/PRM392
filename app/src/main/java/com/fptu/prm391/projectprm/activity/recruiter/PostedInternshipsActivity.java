@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.fptu.prm391.projectprm.R;
 import com.fptu.prm391.projectprm.activity.auth.LoginActivity;
+import com.fptu.prm391.projectprm.activity.common.NotificationActivity;
 import com.fptu.prm391.projectprm.activity.student.InternshipDetailActivity;
 import com.fptu.prm391.projectprm.adapter.InternshipAdapter;
 import com.fptu.prm391.projectprm.db.DatabaseHelper;
@@ -72,6 +73,11 @@ public class PostedInternshipsActivity extends AppCompatActivity {
             SharedPrefManager.getInstance(this).logout();
             Intent intent = new Intent(this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        });
+        ImageButton btnNotifications = findViewById(R.id.btnNoti);
+        btnNotifications.setOnClickListener(v -> {
+            Intent intent = new Intent(this, NotificationActivity.class);
             startActivity(intent);
         });
 
