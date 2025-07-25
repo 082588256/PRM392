@@ -16,6 +16,7 @@ import com.fptu.prm391.projectprm.adapter.InterviewInfoAdapter;
 import com.fptu.prm391.projectprm.db.ApplicationDAO;
 import com.fptu.prm391.projectprm.db.DatabaseHelper;
 import com.fptu.prm391.projectprm.db.InterviewDAO;
+import com.fptu.prm391.projectprm.db.NotificationDAO;
 import com.fptu.prm391.projectprm.model.Application;
 import com.fptu.prm391.projectprm.model.InterviewInfo;
 import com.fptu.prm391.projectprm.util.SharedPrefManager;
@@ -28,6 +29,7 @@ public class AppliedJobsActivity extends AppCompatActivity {
     private InterviewInfoAdapter interviewAdapter;
     private RecyclerView recyclerApplications;
     private ApplicationDAO applicationDAO;
+    private NotificationDAO notificationDAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,16 +54,25 @@ public class AppliedJobsActivity extends AppCompatActivity {
         // Initialize ApplicationDAO with writable database
         DatabaseHelper dbHelper = DatabaseHelper.getInstance(this);
         applicationDAO = new ApplicationDAO(dbHelper.getWritableDatabase());
+        notificationDAO = new NotificationDAO(dbHelper.getWritableDatabase());
         Log.d("AppliedJobsActivity", "ApplicationDAO initialized");
+
         int proposedCount = applicationDAO.countProposedInterviewsByStudent(studentId);
         Log.d("AppliedJobsActivity", "Proposed interviews count: " + proposedCount);
         Toast.makeText(this, "Số lượng lịch phỏng vấn đang chờ xác nhận: " + proposedCount, Toast.LENGTH_LONG).show();
+
         // Tab 1: Applied jobs
         List<Application> appliedList = applicationDAO.getApplicationsWithInternship(studentId);
         Log.d("AppliedJobsActivity", "Fetched " + appliedList.size() + " applications for studentId " + studentId);
-        appliedAdapter = new ApplicationAdapter(appliedList, applicationId -> {
+
+        // Adapter: truyền đủ context, list, isRecruiterMode, DAOs
+        appliedAdapter = new ApplicationAdapter(
+                this, appliedList, false, applicationDAO, notificationDAO
+        );
+
+        // Xử lý rút đơn ứng tuyển
+        appliedAdapter.setOnWithdrawClickListener(applicationId -> {
             Log.d("AppliedJobsActivity", "Withdraw clicked for applicationId: " + applicationId);
-            // Show confirmation dialog
             new AlertDialog.Builder(this)
                     .setTitle("Xác nhận rút đơn")
                     .setMessage("Bạn có chắc muốn rút đơn ứng tuyển này?")
@@ -71,8 +82,6 @@ public class AppliedJobsActivity extends AppCompatActivity {
                             int result = applicationDAO.updateApplicationStatus(applicationId, "Withdrawn application");
                             if (result > 0) {
                                 Toast.makeText(this, "Rút đơn thành công!", Toast.LENGTH_SHORT).show();
-                                Log.d("AppliedJobsActivity", "Update successful for applicationId: " + applicationId);
-                                applicationDAO.debugApplication(applicationId); // Debug application status
                                 refreshApplications(studentId);
                             } else {
                                 Toast.makeText(this, "Lỗi khi rút đơn! Đơn không tồn tại hoặc trạng thái không hợp lệ.", Toast.LENGTH_SHORT).show();
@@ -85,7 +94,7 @@ public class AppliedJobsActivity extends AppCompatActivity {
                     })
                     .setNegativeButton("Hủy", null)
                     .show();
-        }, false); // Set isRecruiterMode to false for student
+        });
 
         // Tab 2: Saved jobs (interviews)
         InterviewDAO interviewDAO = new InterviewDAO(dbHelper.getReadableDatabase());

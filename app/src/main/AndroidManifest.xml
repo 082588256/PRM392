@@ -61,5 +61,7 @@
         <!-- Activity chọn vị trí trên bản đồ (dùng cho thêm Internship mới) -->
         <activity android:name=".activity.common.PickLocationMapActivity" android:exported="false" />
 
+        <activity android:name=".activity.common.NotificationActivity" android:exported="false" />
+
     </application>
 </manifest>
